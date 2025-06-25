@@ -86,7 +86,7 @@ int evaluate_expression(char *expr) {
     char *op_pos = NULL;
     char operator = '\0';
     
-    for (int i = 1; i < strlen(expr); i++) {
+    for (size_t i = 1; i < strlen(expr); i++) {
         if (expr[i] == '+' || expr[i] == '-' || expr[i] == '*' || expr[i] == '/') {
             op_pos = &expr[i];
             operator = expr[i];
@@ -229,7 +229,6 @@ void handle_variable(char *line) {
     
     int value = evaluate_expression(value_str);
     set_variable(var_name, value);
-    printf("Variable '%s' définie avec la valeur %d\n", var_name, value);
 }
 
 // Fonction pour traiter les conditions
@@ -240,7 +239,7 @@ int handle_condition(char *condition) {
     char *comp_pos = NULL;
     char comp_op = '\0';
     
-    for (int i = 0; i < strlen(condition); i++) {
+    for (size_t i = 0; i < strlen(condition); i++) {
         if (condition[i] == '<' || condition[i] == '>') {
             comp_pos = &condition[i];
             comp_op = condition[i];
@@ -307,11 +306,7 @@ void interpret_line(char *line) {
         }
         
         int condition_result = handle_condition(start);
-        if (condition_result) {
-            printf("Condition évaluée: VRAIE\n");
-        } else {
-            printf("Condition évaluée: FAUSSE\n");
-        }
+        // Condition évaluée silencieusement
     }
     else if (strstr(line, "my.")) {
         // Pour de futures fonctionnalités commençant par "my."
@@ -330,8 +325,6 @@ void execute_maya_file(const char *filename) {
         return;
     }
     
-    printf("=== Exécution du fichier Maya: %s ===\n", filename);
-    
     char line[MAX_LINE_LENGTH];
     int line_number = 1;
     
@@ -345,19 +338,14 @@ void execute_maya_file(const char *filename) {
             continue;
         }
         
-        printf("\n[Ligne %d] Exécution: %s\n", line_number, line);
         interpret_line(line);
         line_number++;
     }
     
     fclose(file);
-    printf("\n=== Fin d'exécution du fichier %s ===\n", filename);
 }
 
 int main(int argc, char *argv[]) {
-    printf("=== Interpréteur Maya v1.0 ===\n");
-    printf("Langage de programmation créatif Maya\n\n");
-    
     // Si un fichier est passé en argument
     if (argc == 2) {
         const char *filename = argv[1];
@@ -374,28 +362,10 @@ int main(int argc, char *argv[]) {
     }
     
     // Mode interactif si aucun fichier n'est fourni
-    printf("Mode interactif Maya\n");
-    printf("Utilisez: './main fichier.my' pour exécuter un fichier\n");
-    printf("Ou tapez votre code directement (tapez 'exit' pour quitter)\n\n");
+    printf("=== Interpréteur Maya v1.0 ===\n");
+    printf("Mode interactif - Tapez 'exit' pour quitter\n\n");
     
     char line[MAX_LINE_LENGTH];
-    
-    // Exemple de démonstration
-    printf("=== Démonstration des fonctionnalités Maya ===\n");
-    printf("Commande: my.console('Bonjour Maya!')\n");
-    interpret_line("my.console('Bonjour Maya!')");
-    
-    printf("\nCommande: my.variable test = 15\n");
-    interpret_line("my.variable test = 15");
-    
-    printf("\nCommande: my.math.add(test + 5)\n");
-    interpret_line("my.math.add(test + 5)");
-    
-    printf("\nCommande: my.if(test < 20)\n");
-    interpret_line("my.if(test < 20)");
-    
-    printf("\n=== Mode interactif ===\n");
-    printf("Entrez votre code Maya:\n");
     
     while (1) {
         printf("maya> ");
