@@ -16,6 +16,12 @@ typedef struct {
 Variable variables[MAX_VARIABLES];
 int var_count = 0;
 
+// Variables globales pour gérer les conditions
+int last_condition_result = 0;
+int in_alors_block = 0;
+int in_autre_block = 0;
+int skip_current_block = 0;
+
 // Déclarations des fonctions (prototypes)
 void maya_error(const char *message, int line_number);
 void trim(char *str);
@@ -81,6 +87,10 @@ void set_variable(char *name, int value) {
 // Fonction pour évaluer une expression mathématique simple
 int evaluate_expression(char *expr) {
     trim(expr);
+    
+    // Gestion des valeurs booléennes
+    if (strcmp(expr, "true") == 0) return 1;
+    if (strcmp(expr, "false") == 0) return 0;
     
     // Chercher l'opérateur
     char *op_pos = NULL;
@@ -237,25 +247,38 @@ int handle_condition(char *condition) {
     
     // Chercher l'opérateur de comparaison
     char *comp_pos = NULL;
-    char comp_op = '\0';
+    char comp_op[3] = {0}; // Pour gérer >= et <=
     
-    for (size_t i = 0; i < strlen(condition); i++) {
-        if (condition[i] == '<' || condition[i] == '>') {
-            comp_pos = &condition[i];
-            comp_op = condition[i];
-            break;
+    // Chercher >= d'abord
+    if ((comp_pos = strstr(condition, ">=")) != NULL) {
+        strcpy(comp_op, ">=");
+    }
+    // Puis <=
+    else if ((comp_pos = strstr(condition, "<=")) != NULL) {
+        strcpy(comp_op, "<=");
+    }
+    // Puis < et >
+    else {
+        for (size_t i = 0; i < strlen(condition); i++) {
+            if (condition[i] == '<' || condition[i] == '>') {
+                comp_pos = &condition[i];
+                comp_op[0] = condition[i];
+                comp_op[1] = '\0';
+                break;
+            }
         }
     }
     
     if (!comp_pos) {
-        maya_error("Opérateur de comparaison manquant", 0);
-        return 0;
+        // Pas d'opérateur de comparaison, évaluer comme expression booléenne
+        return evaluate_expression(condition);
     }
     
     // Séparer les opérandes
+    size_t op_len = strlen(comp_op);
     *comp_pos = '\0';
     char *left = condition;
-    char *right = comp_pos + 1;
+    char *right = comp_pos + op_len;
     
     trim(left);
     trim(right);
@@ -263,12 +286,17 @@ int handle_condition(char *condition) {
     int left_val = evaluate_expression(left);
     int right_val = evaluate_expression(right);
     
-    switch (comp_op) {
-        case '<': return left_val < right_val;
-        case '>': return left_val > right_val;
-        default: 
-            maya_error("Opérateur de comparaison non reconnu", 0);
-            return 0;
+    if (strcmp(comp_op, "<") == 0) {
+        return left_val < right_val;
+    } else if (strcmp(comp_op, ">") == 0) {
+        return left_val > right_val;
+    } else if (strcmp(comp_op, "<=") == 0) {
+        return left_val <= right_val;
+    } else if (strcmp(comp_op, ">=") == 0) {
+        return left_val >= right_val;
+    } else {
+        maya_error("Opérateur de comparaison non reconnu", 0);
+        return 0;
     }
 }
 
@@ -277,6 +305,34 @@ void interpret_line(char *line) {
     trim(line);
     
     if (strlen(line) == 0 || line[0] == '#') return; // Ligne vide ou commentaire
+    
+    // Gestion des blocs my.alors et my.autre
+    if (strchr(line, '{')) {
+        if (strstr(line, "my.alors")) {
+            in_alors_block = 1;
+            in_autre_block = 0;
+            skip_current_block = !last_condition_result;
+            return;
+        } else if (strstr(line, "my.autre")) {
+            in_alors_block = 0;
+            in_autre_block = 1;
+            skip_current_block = last_condition_result;
+            return;
+        }
+    }
+    
+    // Fin de bloc
+    if (strchr(line, '}')) {
+        in_alors_block = 0;
+        in_autre_block = 0;
+        skip_current_block = 0;
+        return;
+    }
+    
+    // Si on est dans un bloc à ignorer, ne pas exécuter
+    if (skip_current_block) {
+        return;
+    }
     
     // Structure modulaire pour faciliter l'ajout de nouvelles fonctionnalités
     if (strstr(line, "my.console")) {
@@ -305,12 +361,11 @@ void interpret_line(char *line) {
             return;
         }
         
-        int condition_result = handle_condition(start);
-        if (condition_result) {
-            printf("Condition vraie\n");
-        } else {
-            printf("Condition fausse\n");
-        }
+        last_condition_result = handle_condition(start);
+    }
+    else if (strstr(line, "my.alors") || strstr(line, "my.autre")) {
+        // Ces lignes sont gérées plus haut
+        return;
     }
     else if (strstr(line, "my.")) {
         // Pour de futures fonctionnalités commençant par "my."

@@ -1,38 +1,42 @@
-# Exemple de code Maya avec plusieurs conditions
 
-my.console('=== Exemple de conditions en Maya ===')
+# Test des conditions Maya
 
-# Définissons quelques variables
-my.variable temperature = 25
-my.variable pluie = false
+my.console('=== Test des conditions Maya ===')
+
+# Test 1: Variables et conditions simples
 my.variable age = 16
+my.console('Test avec age = 16')
 
-# Condition 1 : Vérifier la température
+my.if(age < 18)
+my.alors {
+    my.console('Vous êtes mineur!')
+}
+my.autre {
+    my.console('Vous êtes majeur!')
+}
+
+# Test 2: Autre condition
+my.variable temperature = 25
+my.console('Test avec temperature = 25')
+
 my.if(temperature > 30)
 my.alors {
-    my.console('Il fait chaud aujourd\'hui !')
+    my.console('Il fait chaud!')
 }
-my.if(temperature < 15)
-my.alors {
-    my.console('Il fait frais aujourd\'hui !')
+my.autre {
+    my.console('Temperature normale')
 }
 
-# Condition 2 : Vérifier si il pleut
+# Test 3: Variable booléenne
+my.variable pluie = 0
+my.console('Test avec pluie = false (0)')
+
 my.if(pluie)
 my.alors {
-    my.console('N\'oubliez pas votre parapluie !')
+    my.console('Il pleut!')
 }
 my.autre {
-    my.console('Pas de pluie aujourd\'hui, profitez-en !')
+    my.console('Pas de pluie!')
 }
 
-# Condition 3 : Vérifier l'âge
-my.if(age >= 18)
-my.alors {
-    my.console('Vous êtes un adulte.')
-}
-my.autre {
-    my.console('Vous êtes un mineur.')
-}
-
-my.console('=== Fin de l\'exemple ===')
+my.console('=== Fin des tests ===')
