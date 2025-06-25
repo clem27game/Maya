@@ -1,16 +1,31 @@
-all: main
 
-CC = clang
-override CFLAGS += -g -Wno-everything -pthread -lm
+CC = gcc
+CFLAGS = -Wall -Wextra -std=c99 -g
+TARGET = main
+TARGET_DEBUG = main-debug
+SOURCE = main.c
 
-SRCS = $(shell find . -name '.ccls-cache' -type d -prune -o -type f -name '*.c' -print)
-HEADERS = $(shell find . -name '.ccls-cache' -type d -prune -o -type f -name '*.h' -print)
+# Règle par défaut
+all: $(TARGET)
 
-main: $(SRCS) $(HEADERS)
-	$(CC) $(CFLAGS) $(SRCS) -o "$@"
+# Compilation normale
+$(TARGET): $(SOURCE)
+	$(CC) $(CFLAGS) -O2 -o $(TARGET) $(SOURCE)
 
-main-debug: $(SRCS) $(HEADERS)
-	$(CC) $(CFLAGS) -O0 $(SRCS) -o "$@"
+# Compilation avec debug
+$(TARGET_DEBUG): $(SOURCE)
+	$(CC) $(CFLAGS) -DDEBUG -o $(TARGET_DEBUG) $(SOURCE)
 
+# Nettoyage
 clean:
-	rm -f main main-debug
+	rm -f $(TARGET) $(TARGET_DEBUG) *.o
+
+# Exécution avec un fichier test
+test: $(TARGET)
+	./$(TARGET) test.my
+
+# Règles phony
+.PHONY: all clean test
+
+# Règle par défaut pour make sans arguments
+.DEFAULT_GOAL := all

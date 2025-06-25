@@ -16,6 +16,28 @@ typedef struct {
 Variable variables[MAX_VARIABLES];
 int var_count = 0;
 
+// Déclarations des fonctions (prototypes)
+void maya_error(const char *message, int line_number);
+void trim(char *str);
+int get_variable_value(char *name);
+void set_variable(char *name, int value);
+int evaluate_expression(char *expr);
+void handle_console(char *content);
+void handle_math(char *line);
+void handle_variable(char *line);
+int handle_condition(char *condition);
+void interpret_line(char *line);
+void execute_maya_file(const char *filename);
+
+// Fonction pour afficher les erreurs Maya
+void maya_error(const char *message, int line_number) {
+    if (line_number > 0) {
+        printf("ERREUR MAYA [Ligne %d]: %s\n", line_number, message);
+    } else {
+        printf("ERREUR MAYA: %s\n", message);
+    }
+}
+
 // Fonction pour nettoyer les espaces
 void trim(char *str) {
     int start = 0, end = strlen(str) - 1;
@@ -34,7 +56,8 @@ int get_variable_value(char *name) {
             return variables[i].value;
         }
     }
-    return 0; // Variable non trouvée
+    maya_error("Variable non trouvée", 0);
+    return 0;
 }
 
 // Fonction pour définir une variable
@@ -50,6 +73,8 @@ void set_variable(char *name, int value) {
         strcpy(variables[var_count].name, name);
         variables[var_count].value = value;
         var_count++;
+    } else {
+        maya_error("Trop de variables définies", 0);
     }
 }
 
@@ -107,8 +132,15 @@ int evaluate_expression(char *expr) {
         case '+': return left_val + right_val;
         case '-': return left_val - right_val;
         case '*': return left_val * right_val;
-        case '/': return right_val != 0 ? left_val / right_val : 0;
-        default: return 0;
+        case '/': 
+            if (right_val == 0) {
+                maya_error("Division par zéro interdite", 0);
+                return 0;
+            }
+            return left_val / right_val;
+        default: 
+            maya_error("Opérateur non reconnu", 0);
+            return 0;
     }
 }
 
@@ -145,24 +177,19 @@ void handle_math(char *line) {
     
     if (strstr(line, "my.math.add")) {
         int result = evaluate_expression(start);
-        printf("%d\n", result);
+        printf("Résultat: %d\n", result);
     }
     else if (strstr(line, "my.math.sub")) {
         int result = evaluate_expression(start);
-        printf("%d\n", result);
+        printf("Résultat: %d\n", result);
     }
     else if (strstr(line, "my.math.mult")) {
         int result = evaluate_expression(start);
-        printf("%d\n", result);
+        printf("Résultat: %d\n", result);
     }
     else if (strstr(line, "my.math.div")) {
-        // Vérifier la division par zéro
-        if (strstr(start, "/ 0") || strstr(start, "/0")) {
-            maya_error("Division par zéro interdite", 0);
-            return;
-        }
         int result = evaluate_expression(start);
-        printf("%d\n", result);
+        printf("Résultat: %d\n", result);
     }
     else {
         maya_error("Opération mathématique non reconnue", 0);
@@ -202,7 +229,7 @@ void handle_variable(char *line) {
     
     int value = evaluate_expression(value_str);
     set_variable(var_name, value);
-    printf("Variable '%s' = %d\n", var_name, value);
+    printf("Variable '%s' définie avec la valeur %d\n", var_name, value);
 }
 
 // Fonction pour traiter les conditions
@@ -221,7 +248,10 @@ int handle_condition(char *condition) {
         }
     }
     
-    if (!comp_pos) return 0;
+    if (!comp_pos) {
+        maya_error("Opérateur de comparaison manquant", 0);
+        return 0;
+    }
     
     // Séparer les opérandes
     *comp_pos = '\0';
@@ -237,7 +267,9 @@ int handle_condition(char *condition) {
     switch (comp_op) {
         case '<': return left_val < right_val;
         case '>': return left_val > right_val;
-        default: return 0;
+        default: 
+            maya_error("Opérateur de comparaison non reconnu", 0);
+            return 0;
     }
 }
 
@@ -247,6 +279,7 @@ void interpret_line(char *line) {
     
     if (strlen(line) == 0 || line[0] == '#') return; // Ligne vide ou commentaire
     
+    // Structure modulaire pour faciliter l'ajout de nouvelles fonctionnalités
     if (strstr(line, "my.console")) {
         handle_console(line);
     }
@@ -257,7 +290,7 @@ void interpret_line(char *line) {
         handle_variable(line);
     }
     else if (strstr(line, "my.if")) {
-        // Traitement basique des conditions (simplifié)
+        // Traitement des conditions
         char *start = strchr(line, '(');
         char *end = strrchr(line, ')');
         if (!start || !end) {
@@ -275,19 +308,18 @@ void interpret_line(char *line) {
         
         int condition_result = handle_condition(start);
         if (condition_result) {
-            printf("Condition vraie\n");
+            printf("Condition évaluée: VRAIE\n");
         } else {
-            printf("Condition fausse\n");
+            printf("Condition évaluée: FAUSSE\n");
         }
+    }
+    else if (strstr(line, "my.")) {
+        // Pour de futures fonctionnalités commençant par "my."
+        maya_error("Fonction Maya non implémentée", 0);
     }
     else {
         maya_error("Commande Maya non reconnue", 0);
     }
-}
-
-// Fonction pour afficher les erreurs Maya
-void maya_error(const char *message, int line_number) {
-    printf("ERREUR MAYA [Ligne %d]: %s\n", line_number, message);
 }
 
 // Fonction pour exécuter un fichier Maya
@@ -313,18 +345,18 @@ void execute_maya_file(const char *filename) {
             continue;
         }
         
-        printf("[%d] %s\n", line_number, line);
+        printf("\n[Ligne %d] Exécution: %s\n", line_number, line);
         interpret_line(line);
         line_number++;
     }
     
     fclose(file);
-    printf("=== Fin d'exécution ===\n");
+    printf("\n=== Fin d'exécution du fichier %s ===\n", filename);
 }
 
 int main(int argc, char *argv[]) {
     printf("=== Interpréteur Maya v1.0 ===\n");
-    printf("Langage de programmation créatif Maya\n");
+    printf("Langage de programmation créatif Maya\n\n");
     
     // Si un fichier est passé en argument
     if (argc == 2) {
@@ -342,29 +374,33 @@ int main(int argc, char *argv[]) {
     }
     
     // Mode interactif si aucun fichier n'est fourni
-    printf("Entrez votre code Maya (tapez 'exit' pour quitter):\n");
-    printf("Ou utilisez: ./main fichier.my pour exécuter un fichier\n\n");
+    printf("Mode interactif Maya\n");
+    printf("Utilisez: './main fichier.my' pour exécuter un fichier\n");
+    printf("Ou tapez votre code directement (tapez 'exit' pour quitter)\n\n");
     
     char line[MAX_LINE_LENGTH];
     
     // Exemple de démonstration
-    printf("Exemple de code Maya:\n");
-    printf("my.console('Bonjour Maya!')\n");
+    printf("=== Démonstration des fonctionnalités Maya ===\n");
+    printf("Commande: my.console('Bonjour Maya!')\n");
     interpret_line("my.console('Bonjour Maya!')");
     
-    printf("my.variable test = 15\n");
+    printf("\nCommande: my.variable test = 15\n");
     interpret_line("my.variable test = 15");
     
-    printf("my.math.add(test + 5)\n");
+    printf("\nCommande: my.math.add(test + 5)\n");
     interpret_line("my.math.add(test + 5)");
     
-    printf("my.if(test < 20)\n");
+    printf("\nCommande: my.if(test < 20)\n");
     interpret_line("my.if(test < 20)");
     
-    printf("\nMode interactif - Entrez votre code:\n");
+    printf("\n=== Mode interactif ===\n");
+    printf("Entrez votre code Maya:\n");
     
     while (1) {
         printf("maya> ");
+        fflush(stdout);
+        
         if (fgets(line, sizeof(line), stdin) == NULL) break;
         
         // Enlever le saut de ligne
@@ -375,7 +411,9 @@ int main(int argc, char *argv[]) {
             break;
         }
         
-        interpret_line(line);
+        if (strlen(line) > 0) {
+            interpret_line(line);
+        }
     }
     
     return 0;
