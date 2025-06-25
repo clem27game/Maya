@@ -1,0 +1,32 @@
+
+# Exemple d'utilisation de my.input - Maya v2.0
+
+my.console('🌸 === Exemple interactif Maya === 🌸')
+
+# Demander le nom de l'utilisateur
+my.input(nom_utilisateur, 'Quel est votre nom? ')
+my.console('Bonjour ' + nom_utilisateur + '!')
+
+# Demander l'âge
+my.input(age, 'Quel est votre âge? ')
+my.console('Vous avez ' + age + ' ans.')
+
+# Condition basée sur l'âge saisi
+my.variable age_num = age
+my.if(age_num >= 18)
+my.alors {
+    my.color.console('GREEN')
+    my.console('Vous êtes majeur, ' + nom_utilisateur + '!')
+    my.color.console('DEFAULT')
+}
+my.autre {
+    my.color.console('YELLOW')
+    my.console('Vous êtes mineur, ' + nom_utilisateur + '!')
+    my.color.console('DEFAULT')
+}
+
+# Demander la couleur préférée
+my.input(couleur, 'Quelle est votre couleur préférée? ')
+my.console('Votre couleur préférée est ' + couleur + '!')
+
+my.console('🎉 Merci d\'avoir testé Maya! 🎉')

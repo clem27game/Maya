@@ -3,14 +3,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
+#include <unistd.h>
 
 #define MAX_LINE_LENGTH 1000
 #define MAX_VARIABLES 100
 #define MAX_VAR_NAME 50
+#define MAX_STRING_VALUE 500
 
 typedef struct {
     char name[MAX_VAR_NAME];
-    int value;
+    char value[MAX_STRING_VALUE];
+    int is_numeric;
 } Variable;
 
 Variable variables[MAX_VARIABLES];
@@ -22,25 +26,43 @@ int in_alors_block = 0;
 int in_autre_block = 0;
 int skip_current_block = 0;
 
+// Variable globale pour la couleur actuelle
+char current_color[20] = "DEFAULT";
+
 // Déclarations des fonctions (prototypes)
 void maya_error(const char *message, int line_number);
 void trim(char *str);
-int get_variable_value(char *name);
-void set_variable(char *name, int value);
-int evaluate_expression(char *expr);
+char* get_variable_value(char *name);
+void set_variable(char *name, char *value, int is_numeric);
+int evaluate_expression_numeric(char *expr);
+char* process_string_with_variables(char *input);
 void handle_console(char *content);
 void handle_math(char *line);
 void handle_variable(char *line);
+void handle_input(char *line);
+void handle_delai(char *line);
+void handle_draw(char *line);
+void handle_jolie_txt(char *line);
+void handle_color_console(char *line);
+void handle_nombre_random(char *line);
+void handle_random_txt(char *line);
 int handle_condition(char *condition);
 void interpret_line(char *line);
 void execute_maya_file(const char *filename);
+void apply_color(char *color);
+void reset_color();
+void draw_heart();
+void draw_tree();
+void draw_dog();
+void draw_horse();
+void draw_goat();
 
 // Fonction pour afficher les erreurs Maya
 void maya_error(const char *message, int line_number) {
     if (line_number > 0) {
-        printf("ERREUR MAYA [Ligne %d]: %s\n", line_number, message);
+        printf("\033[31mERREUR MAYA [Ligne %d]: %s\033[0m\n", line_number, message);
     } else {
-        printf("ERREUR MAYA: %s\n", message);
+        printf("\033[31mERREUR MAYA: %s\033[0m\n", message);
     }
 }
 
@@ -56,28 +78,30 @@ void trim(char *str) {
 }
 
 // Fonction pour obtenir la valeur d'une variable
-int get_variable_value(char *name) {
+char* get_variable_value(char *name) {
     for (int i = 0; i < var_count; i++) {
         if (strcmp(variables[i].name, name) == 0) {
             return variables[i].value;
         }
     }
     maya_error("Variable non trouvée", 0);
-    return 0;
+    return NULL;
 }
 
 // Fonction pour définir une variable
-void set_variable(char *name, int value) {
+void set_variable(char *name, char *value, int is_numeric) {
     for (int i = 0; i < var_count; i++) {
         if (strcmp(variables[i].name, name) == 0) {
-            variables[i].value = value;
+            strcpy(variables[i].value, value);
+            variables[i].is_numeric = is_numeric;
             return;
         }
     }
     // Nouvelle variable
     if (var_count < MAX_VARIABLES) {
         strcpy(variables[var_count].name, name);
-        variables[var_count].value = value;
+        strcpy(variables[var_count].value, value);
+        variables[var_count].is_numeric = is_numeric;
         var_count++;
     } else {
         maya_error("Trop de variables définies", 0);
@@ -85,7 +109,7 @@ void set_variable(char *name, int value) {
 }
 
 // Fonction pour évaluer une expression mathématique simple
-int evaluate_expression(char *expr) {
+int evaluate_expression_numeric(char *expr) {
     trim(expr);
     
     // Gestion des valeurs booléennes
@@ -109,7 +133,11 @@ int evaluate_expression(char *expr) {
         if (isdigit(expr[0]) || expr[0] == '-') {
             return atoi(expr);
         } else {
-            return get_variable_value(expr);
+            char *var_value = get_variable_value(expr);
+            if (var_value) {
+                return atoi(var_value);
+            }
+            return 0;
         }
     }
     
@@ -127,14 +155,16 @@ int evaluate_expression(char *expr) {
     if (isdigit(left[0]) || left[0] == '-') {
         left_val = atoi(left);
     } else {
-        left_val = get_variable_value(left);
+        char *var_value = get_variable_value(left);
+        left_val = var_value ? atoi(var_value) : 0;
     }
     
     // Évaluer l'opérande droite
     if (isdigit(right[0]) || right[0] == '-') {
         right_val = atoi(right);
     } else {
-        right_val = get_variable_value(right);
+        char *var_value = get_variable_value(right);
+        right_val = var_value ? atoi(var_value) : 0;
     }
     
     // Effectuer l'opération
@@ -154,21 +184,97 @@ int evaluate_expression(char *expr) {
     }
 }
 
+// Fonction pour traiter les chaînes avec variables et opérateur +
+char* process_string_with_variables(char *input) {
+    static char result[MAX_STRING_VALUE * 2];
+    char temp[MAX_STRING_VALUE];
+    strcpy(temp, input);
+    result[0] = '\0';
+    
+    char *token = strtok(temp, "+");
+    int first = 1;
+    
+    while (token != NULL) {
+        trim(token);
+        
+        if (token[0] == '\'' && token[strlen(token)-1] == '\'') {
+            // C'est une chaîne littérale
+            token[strlen(token)-1] = '\0';
+            token++;
+            if (!first) strcat(result, " ");
+            strcat(result, token);
+        } else {
+            // C'est une variable
+            char *var_value = get_variable_value(token);
+            if (var_value) {
+                if (!first) strcat(result, " ");
+                strcat(result, var_value);
+            }
+        }
+        first = 0;
+        token = strtok(NULL, "+");
+    }
+    
+    return result;
+}
+
+// Fonction pour appliquer une couleur
+void apply_color(char *color) {
+    if (strcmp(color, "RED") == 0) printf("\033[31m");
+    else if (strcmp(color, "GREEN") == 0) printf("\033[32m");
+    else if (strcmp(color, "YELLOW") == 0) printf("\033[33m");
+    else if (strcmp(color, "BLUE") == 0) printf("\033[34m");
+    else if (strcmp(color, "MAGENTA") == 0) printf("\033[35m");
+    else if (strcmp(color, "CYAN") == 0) printf("\033[36m");
+    else if (strcmp(color, "WHITE") == 0) printf("\033[37m");
+    else if (strcmp(color, "BLACK") == 0) printf("\033[30m");
+    else if (strcmp(color, "PINK") == 0) printf("\033[95m");
+    else if (strcmp(color, "ORANGE") == 0) printf("\033[93m");
+    else if (strcmp(color, "PURPLE") == 0) printf("\033[94m");
+    else if (strcmp(color, "BROWN") == 0) printf("\033[33m");
+}
+
+// Fonction pour réinitialiser la couleur
+void reset_color() {
+    printf("\033[0m");
+}
+
 // Fonction pour traiter my.console
 void handle_console(char *content) {
-    // Extraire le contenu entre quotes
-    char *start = strchr(content, '\'');
-    if (start) {
-        start++;
-        char *end = strrchr(content, '\'');
-        if (end && end != start) {
-            *end = '\0';
-            printf("%s\n", start);
-        } else {
-            maya_error("Syntaxe incorrecte pour my.console - guillemets manquants", 0);
-        }
+    char *start = strchr(content, '(');
+    char *end = strrchr(content, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.console - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    // Traitement avec variables et concaténation
+    if (strchr(start, '+')) {
+        char *processed = process_string_with_variables(start);
+        apply_color(current_color);
+        printf("%s\n", processed);
+        reset_color();
     } else {
-        maya_error("Syntaxe incorrecte pour my.console - guillemets manquants", 0);
+        // Traitement simple
+        if (start[0] == '\'' && start[strlen(start)-1] == '\'') {
+            start[strlen(start)-1] = '\0';
+            start++;
+            apply_color(current_color);
+            printf("%s\n", start);
+            reset_color();
+        } else {
+            // C'est une variable
+            char *var_value = get_variable_value(start);
+            if (var_value) {
+                apply_color(current_color);
+                printf("%s\n", var_value);
+                reset_color();
+            }
+        }
     }
 }
 
@@ -185,25 +291,8 @@ void handle_math(char *line) {
     start++;
     *end = '\0';
     
-    if (strstr(line, "my.math.add")) {
-        int result = evaluate_expression(start);
-        printf("Résultat: %d\n", result);
-    }
-    else if (strstr(line, "my.math.sub")) {
-        int result = evaluate_expression(start);
-        printf("Résultat: %d\n", result);
-    }
-    else if (strstr(line, "my.math.mult")) {
-        int result = evaluate_expression(start);
-        printf("Résultat: %d\n", result);
-    }
-    else if (strstr(line, "my.math.div")) {
-        int result = evaluate_expression(start);
-        printf("Résultat: %d\n", result);
-    }
-    else {
-        maya_error("Opération mathématique non reconnue", 0);
-    }
+    int result = evaluate_expression_numeric(start);
+    printf("Résultat: %d\n", result);
 }
 
 // Fonction pour traiter les variables
@@ -232,13 +321,299 @@ void handle_variable(char *line) {
         return;
     }
     
-    if (strlen(value_str) == 0) {
-        maya_error("Valeur de variable vide", 0);
+    // Déterminer si c'est une valeur numérique ou textuelle
+    int is_numeric = 1;
+    if (value_str[0] == '\'' || strcmp(value_str, "true") == 0 || strcmp(value_str, "false") == 0) {
+        is_numeric = 0;
+        if (value_str[0] == '\'') {
+            value_str[strlen(value_str)-1] = '\0';
+            value_str++;
+        }
+    }
+    
+    set_variable(var_name, value_str, is_numeric);
+}
+
+// Fonction pour traiter my.input
+void handle_input(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.input - parenthèses manquantes", 0);
         return;
     }
     
-    int value = evaluate_expression(value_str);
-    set_variable(var_name, value);
+    start++;
+    *end = '\0';
+    
+    // Parser les arguments: variable, message
+    char *comma = strchr(start, ',');
+    if (!comma) {
+        maya_error("my.input nécessite deux arguments: variable et message", 0);
+        return;
+    }
+    
+    *comma = '\0';
+    char *var_name = start;
+    char *message = comma + 1;
+    
+    trim(var_name);
+    trim(message);
+    
+    // Afficher le message
+    if (message[0] == '\'' && message[strlen(message)-1] == '\'') {
+        message[strlen(message)-1] = '\0';
+        message++;
+        printf("%s", message);
+    }
+    
+    // Lire l'entrée utilisateur
+    char input[MAX_STRING_VALUE];
+    if (fgets(input, sizeof(input), stdin)) {
+        input[strcspn(input, "\n")] = '\0';
+        set_variable(var_name, input, 0);
+    }
+}
+
+// Fonction pour traiter my.delai
+void handle_delai(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.delai - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    int milliseconds = evaluate_expression_numeric(start);
+    usleep(milliseconds * 1000); // convertir en microsecondes
+}
+
+// Fonctions de dessin ASCII
+void draw_heart() {
+    printf("  ♥♥♥   ♥♥♥  \n");
+    printf("♥♥♥♥♥ ♥♥♥♥♥\n");
+    printf("♥♥♥♥♥♥♥♥♥♥♥\n");
+    printf(" ♥♥♥♥♥♥♥♥♥ \n");
+    printf("  ♥♥♥♥♥♥♥  \n");
+    printf("   ♥♥♥♥♥   \n");
+    printf("    ♥♥♥    \n");
+    printf("     ♥     \n");
+}
+
+void draw_tree() {
+    printf("       🌲\n");
+    printf("      🌲🌲🌲\n");
+    printf("     🌲🌲🌲🌲🌲\n");
+    printf("    🌲🌲🌲🌲🌲🌲🌲\n");
+    printf("   🌲🌲🌲🌲🌲🌲🌲🌲🌲\n");
+    printf("       ||||\n");
+    printf("       ||||\n");
+}
+
+void draw_dog() {
+    printf("   /\\   /\\  \n");
+    printf("  (  . .)   \n");
+    printf("   )   (    \n");
+    printf("  (  v  )   \n");
+    printf("  ^^   ^^   \n");
+    printf("🐕 Woof! 🐕\n");
+}
+
+void draw_horse() {
+    printf("    /|   /|  \n");
+    printf("   (  oo )   \n");
+    printf("    )  (     \n");
+    printf("   (    )    \n");
+    printf("  ^^    ^^   \n");
+    printf("🐎 Neighh! 🐎\n");
+}
+
+void draw_goat() {
+    printf("   /\\   /\\  \n");
+    printf("  (  - -)   \n");
+    printf("   )   (    \n");
+    printf("  (  ~  )   \n");
+    printf("  ^^   ^^   \n");
+    printf("🐐 Baaah! 🐐\n");
+}
+
+// Fonction pour traiter my.draw
+void handle_draw(char *line) {
+    if (strstr(line, "my.draw.heart")) {
+        draw_heart();
+    }
+    else if (strstr(line, "my.draw.tree")) {
+        draw_tree();
+    }
+    else if (strstr(line, "my.draw.dog")) {
+        draw_dog();
+    }
+    else if (strstr(line, "my.draw.horse")) {
+        draw_horse();
+    }
+    else if (strstr(line, "my.draw.goat")) {
+        draw_goat();
+    }
+    else if (strstr(line, "my.draw.pers")) {
+        char *start = strchr(line, '(');
+        char *end = strrchr(line, ')');
+        
+        if (!start || !end) {
+            maya_error("Syntaxe incorrecte pour my.draw.pers - parenthèses manquantes", 0);
+            return;
+        }
+        
+        start++;
+        *end = '\0';
+        
+        if (start[0] == '\'' && start[strlen(start)-1] == '\'') {
+            start[strlen(start)-1] = '\0';
+            start++;
+            printf("%s\n", start);
+        }
+    }
+    else {
+        maya_error("Fonction de dessin non reconnue", 0);
+    }
+}
+
+// Fonction pour traiter my.jolie.txt
+void handle_jolie_txt(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.jolie.txt - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    char *comma = strchr(start, ',');
+    if (!comma) {
+        maya_error("my.jolie.txt nécessite deux arguments: texte et police", 0);
+        return;
+    }
+    
+    *comma = '\0';
+    char *text = start;
+    char *font = comma + 1;
+    
+    trim(text);
+    trim(font);
+    
+    if (text[0] == '\'' && text[strlen(text)-1] == '\'') {
+        text[strlen(text)-1] = '\0';
+        text++;
+    }
+    
+    printf("╔══════════════════════════════════════╗\n");
+    printf("║  Police %s: %s\n", font, text);
+    printf("╚══════════════════════════════════════╝\n");
+}
+
+// Fonction pour traiter my.color.console
+void handle_color_console(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.color.console - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    if (start[0] == '\'' && start[strlen(start)-1] == '\'') {
+        start[strlen(start)-1] = '\0';
+        start++;
+    }
+    
+    strcpy(current_color, start);
+}
+
+// Fonction pour traiter my.nombre.random
+void handle_nombre_random(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.nombre.random - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    char *comma = strchr(start, ',');
+    if (!comma) {
+        maya_error("my.nombre.random nécessite deux arguments: min et max", 0);
+        return;
+    }
+    
+    *comma = '\0';
+    char *min_str = start;
+    char *max_str = comma + 1;
+    
+    trim(min_str);
+    trim(max_str);
+    
+    int min = evaluate_expression_numeric(min_str);
+    int max = evaluate_expression_numeric(max_str);
+    
+    if (min >= max) {
+        maya_error("Le minimum doit être inférieur au maximum", 0);
+        return;
+    }
+    
+    srand(time(NULL));
+    int random_num = min + rand() % (max - min + 1);
+    printf("Nombre aléatoire: %d\n", random_num);
+}
+
+// Fonction pour traiter my.random.txt
+void handle_random_txt(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.random.txt - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    char texts[10][MAX_STRING_VALUE];
+    int count = 0;
+    
+    char *token = strtok(start, ",");
+    while (token != NULL && count < 10) {
+        trim(token);
+        if (token[0] == '\'' && token[strlen(token)-1] == '\'') {
+            token[strlen(token)-1] = '\0';
+            token++;
+        }
+        strcpy(texts[count], token);
+        count++;
+        token = strtok(NULL, ",");
+    }
+    
+    if (count == 0) {
+        maya_error("Aucun texte fourni pour my.random.txt", 0);
+        return;
+    }
+    
+    srand(time(NULL));
+    int random_index = rand() % count;
+    printf("Texte aléatoire: %s\n", texts[random_index]);
 }
 
 // Fonction pour traiter les conditions
@@ -271,7 +646,7 @@ int handle_condition(char *condition) {
     
     if (!comp_pos) {
         // Pas d'opérateur de comparaison, évaluer comme expression booléenne
-        return evaluate_expression(condition);
+        return evaluate_expression_numeric(condition);
     }
     
     // Séparer les opérandes
@@ -283,8 +658,8 @@ int handle_condition(char *condition) {
     trim(left);
     trim(right);
     
-    int left_val = evaluate_expression(left);
-    int right_val = evaluate_expression(right);
+    int left_val = evaluate_expression_numeric(left);
+    int right_val = evaluate_expression_numeric(right);
     
     if (strcmp(comp_op, "<") == 0) {
         return left_val < right_val;
@@ -343,6 +718,27 @@ void interpret_line(char *line) {
     }
     else if (strstr(line, "my.variable")) {
         handle_variable(line);
+    }
+    else if (strstr(line, "my.input")) {
+        handle_input(line);
+    }
+    else if (strstr(line, "my.delai")) {
+        handle_delai(line);
+    }
+    else if (strstr(line, "my.draw")) {
+        handle_draw(line);
+    }
+    else if (strstr(line, "my.jolie.txt")) {
+        handle_jolie_txt(line);
+    }
+    else if (strstr(line, "my.color.console")) {
+        handle_color_console(line);
+    }
+    else if (strstr(line, "my.nombre.random")) {
+        handle_nombre_random(line);
+    }
+    else if (strstr(line, "my.random.txt")) {
+        handle_random_txt(line);
     }
     else if (strstr(line, "my.if")) {
         // Traitement des conditions
@@ -405,6 +801,9 @@ void execute_maya_file(const char *filename) {
 }
 
 int main(int argc, char *argv[]) {
+    // Initialiser le générateur de nombres aléatoires
+    srand(time(NULL));
+    
     // Si un fichier est passé en argument
     if (argc == 2) {
         const char *filename = argv[1];
@@ -421,7 +820,8 @@ int main(int argc, char *argv[]) {
     }
     
     // Mode interactif si aucun fichier n'est fourni
-    printf("=== Interpréteur Maya v1.0 ===\n");
+    printf("🌸 === Interpréteur Maya v2.0 === 🌸\n");
+    printf("💖 Nouvelles fonctionnalités: Variables améliorées, Input, Délais, Dessins ASCII, Couleurs, Random! 💖\n");
     printf("Mode interactif - Tapez 'exit' pour quitter\n\n");
     
     char line[MAX_LINE_LENGTH];
@@ -436,7 +836,7 @@ int main(int argc, char *argv[]) {
         line[strcspn(line, "\n")] = '\0';
         
         if (strcmp(line, "exit") == 0) {
-            printf("Au revoir!\n");
+            printf("🌸 Au revoir! Merci d'avoir utilisé Maya! 💖\n");
             break;
         }
         

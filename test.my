@@ -1,42 +1,77 @@
 
-# Test des conditions Maya
+# Test complet des nouvelles fonctionnalités Maya v2.0
 
-my.console('=== Test des conditions Maya ===')
+my.console('🌸 === Tests Maya v2.0 === 🌸')
 
-# Test 1: Variables et conditions simples
-my.variable age = 16
-my.console('Test avec age = 16')
+# Test 1: Variables améliorées avec concaténation
+my.variable nom = 'Maya'
+my.variable version = '2.0'
+my.console('Bienvenue dans le langage ' + nom + ' version ' + version + '!')
 
-my.if(age < 18)
+# Test 2: Couleurs de console
+my.color.console('PINK')
+my.console('Ce texte est en rose!')
+
+my.color.console('BLUE')
+my.console('Ce texte est en bleu!')
+
+my.color.console('GREEN')
+my.console('Ce texte est en vert!')
+
+my.color.console('DEFAULT')
+
+# Test 3: Délais entre messages
+my.console('Message 1...')
+my.delai(1000)
+my.console('Message 2 après 1 seconde!')
+my.delai(500)
+my.console('Message 3 après 0.5 seconde!')
+
+# Test 4: Dessins ASCII
+my.console('🎨 Voici quelques dessins ASCII:')
+my.draw.heart
+my.delai(500)
+my.draw.tree
+my.delai(500)
+my.draw.dog
+my.delai(500)
+my.draw.horse
+my.delai(500)
+my.draw.goat
+
+# Test 5: Dessin personnalisé
+my.draw.pers('  ★ Maya ★  ')
+
+# Test 6: Texte stylé
+my.jolie.txt('Maya est fantastique!', 'Style1')
+
+# Test 7: Nombres aléatoires
+my.console('🎲 Génération de nombres aléatoires:')
+my.nombre.random(1, 10)
+my.nombre.random(50, 100)
+
+# Test 8: Texte aléatoire
+my.console('🎭 Sélection de texte aléatoire:')
+my.random.txt('Bonjour', 'Salut', 'Coucou', 'Hello', 'Bonsoir')
+
+# Test 9: Conditions avec variables
+my.variable age = 20
+my.if(age >= 18)
 my.alors {
-    my.console('Vous êtes mineur!')
-}
-my.autre {
+    my.color.console('GREEN')
     my.console('Vous êtes majeur!')
-}
-
-# Test 2: Autre condition
-my.variable temperature = 25
-my.console('Test avec temperature = 25')
-
-my.if(temperature > 30)
-my.alors {
-    my.console('Il fait chaud!')
+    my.color.console('DEFAULT')
 }
 my.autre {
-    my.console('Temperature normale')
+    my.color.console('YELLOW')
+    my.console('Vous êtes mineur!')
+    my.color.console('DEFAULT')
 }
 
-# Test 3: Variable booléenne
-my.variable pluie = 0
-my.console('Test avec pluie = false (0)')
+# Test 10: Mathématiques avec variables
+my.variable nombre1 = 15
+my.variable nombre2 = 25
+my.console('Calculs avec variables:')
+my.math.add(nombre1 + nombre2)
 
-my.if(pluie)
-my.alors {
-    my.console('Il pleut!')
-}
-my.autre {
-    my.console('Pas de pluie!')
-}
-
-my.console('=== Fin des tests ===')
+my.console('🎉 Tests terminés! Maya v2.0 fonctionne parfaitement! 🎉')
