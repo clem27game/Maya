@@ -1,0 +1,4 @@
+my.console('Bonjour Maya!')
+my.variable age = 15
+my.math.add(age + 3)
+my.if(age < 18)
