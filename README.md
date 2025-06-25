@@ -1,4 +1,4 @@
-**🧡💖🍓 Language De programmation Maya!❤️🐬**
+# **🧡💖🍓 Language De programmation Maya!❤️🐬**
 
 ![maya](http://www.image-heberg.fr/files/17507795351188297358.webp)
 
@@ -7,26 +7,27 @@
 Maya permettra à sa communauté de développeurs d'être creatif : imaginer des histoires, des simulations, accomplir des taches d'utilitaires très utiles, ou même de fabriquer des prototypes de leurs meilleurs idées!
 Maya sera a terme, le language de programmation de la créativité par excellence !
 
-🛑**ne visant pas a devenirle prochain python ou le prochain JavaScript, mais tout simplement le prochain MAYA!🛑**
+🛑**ne visant pas a devenir le prochain python ou le prochain JavaScript, mais tout simplement le prochain MAYA!🛑**
 
 **🧶 Installation**
 
 pour installer maya, copier son lien de partage et cloné son repos github ici présent avec :
 
 ``` 
-git clone 
+git clone https://github.com/clem27game/Maya
 
 ```
 
 🌸**Fonctionnalités actuelles de Maya🌸**
 
-Maya nest pour le moment qu'un tout petit bébé, avec seulement la possibilité d'afficher des messages dans la console, faire des mathématiques (addictions, soustrations, divisions et multiplications) et un système de variables !
+Maya n'est pour le moment qu'un très jeune language de programmation !
+mais deja tres créatif, avec affichage de messages simples comme coloré dans la console, dessins ASCII d'arbres, de coeurs , de chèvre, de cheval , de chiens et mêmes personnalisés, système de variables tres robuste et système de sortie et d'entrée input dans la console, génération de nombres aléatoires compris entre un 2 nombres ou chiffres choisis, génération aléatoire de texte parmis des textes personnalisés par vous dans votre code, affichage de police jolie, délai d'attente pour personnalisé vos sortie de console, mathématiques simples (additions, soustrations, multiplications et divisions ) et conditions si alors et autre 🩷🩷
 
-mais ce bébé maya grandira hyper vite nous vous le promettons que maya deviendra le langage de programmation que jai toujours rêver de crée tres vite ! il est deja la, donc lançons nous dans cette belle aventure !
+MAYA COMMENCE A VRAIMENT GRANDIR Tenez vous prêt ! ❤️
 
 -------
 
-**exemple des fonctionnalités actuelles de Maya** :
+**Fonctionnalités actuelles de Maya** :
 
 -**🧭affichage de messages dans la console** : my.console()
 
@@ -66,7 +67,7 @@ my.variable
 **exemple :**
 
 ```
-my.variable = 6
+my.variable nomDeLaVariable = 6
 
 ```
 
@@ -124,23 +125,46 @@ my.autre {
 
 my.console('=== Fin des tests ===')
 ```
+
+**🩶🍓 Personnalisation des sorties de console🍓🩶**
+
+ -**🍭Permettre a l'utilisateur d'écrire des réponses interactive en écrivant dans la console des réponses a des questions scriptes** :  my.input
+
+ -**🐝Décider d'un temps d'attente de sortie de console** : my.delai
+
+ -**🐍Fonctions de dessins ASCII pré-definis** :
+ ° Dessiner un coeur pré-definis : my.draw.heart
+ ° dessiner un arbre pré-definis : my.draw.three
+ ° dessiner un chien pré-definis : my.draw.dog
+ ° dessiner un cheval pré-definis : my.draw.horse
+ ° dessiner une chèvre pré-definis : my.draw.goat
+
+ -**🍰Dessins ASCII personnalisés** : my.draw.pers
+
+ -**🪩 Couleurs de texte jolie dans la console** : my.color.console
+
+° couleurs supportés :
+
+-**🧶 Générations de nombres compris entre 2 nombres de votre choix** : my.nombre.random
+
+-**🥰 Génération de textes et d'options aleatoire parmis vos choix codés** : my.random.txt
+
 **❤️Maya - le nouveau langage de programmation❤️** :
 
 MAY est encore tout noeuf ! son développement viens a peine de commencer ! donc préparez vous pour des nouveautés palpitantes et le développement entier de maya!
 
 **🌸Futur de Maya🌸**
 
-pour la version qui va venir nous prévoyons les fonctionnalités suivantes :
+pour les versions qui vont venir nous prévoyons les fonctionnalités suivantes :
 
-1) fonctions de dessins ASCII dans la console (arbre, cœur, cheval, chien etc...) 🍉
-2) simulations (scientifiques, baccalauréat, robotique, IA etc...) 🌷
-3) calculs mathématiques et d'arithmétique plus avancés ! 🐝
-4) fonctionnalités en rapport avec la gestion finance et le bac stmg ou général :) 🍅
-5) fonctionnalités de jeux en rapport avec la philosophie 💚
-6) mini-jeux dans la console (dés, quizz etc...) 🍭
-7) gestion de fichiers (lire des fichiers, en créer , les excécuter,en supprimer etc...) 😈
+1) simulations (scientifiques, baccalauréat, robotique, IA etc...) 🌷
+2) calculs mathématiques et d'arithmétique plus avancés ! 🐝
+3) fonctionnalités en rapport avec la gestion finance et le bac stmg ou général :) 🍅
+4) fonctionnalités de jeux en rapport avec la philosophie 💚
+5) mini-jeux dans la console (dés, quizz etc...) 🍭
+6) gestion de fichiers (lire des fichiers, en créer , les excécuter,en supprimer etc...) 😈
 
 
    et bien plus!
 
-  🧡 Bon codage dans le monde de la programmation ! 💖
+  **🧡 Bon codage dans le monde de la programmation ! 💖**

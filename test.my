@@ -38,6 +38,7 @@ my.delai(500)
 my.draw.horse
 my.delai(500)
 my.draw.goat
+my.draw.pers('--------🍅🛑💚💚🌷🐉🌷🏹🍉🌸🍉🌸🍉🌸🍉🌸🌸🍉🌸🍉🌸🍉-------')
 
 # Test 5: Dessin personnalisé
 my.draw.pers('  ★ Maya ★  ')
@@ -75,3 +76,4 @@ my.console('Calculs avec variables:')
 my.math.add(nombre1 + nombre2)
 
 my.console('🎉 Tests terminés! Maya v2.0 fonctionne parfaitement! 🎉')
+my.random.txt('Option1', 'Option2', 'Option3')
