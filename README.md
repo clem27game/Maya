@@ -1,6 +1,6 @@
 **🧡💖🍓 Language De programmation Maya!❤️🐬**
 
-[Maya](http://www.image-heberg.fr/files/17508614793873183098.webp)
+![maya](http://www.image-heberg.fr/files/17507795351188297358.webp)
 
 **Maya est un nouveau langage de programmation tout neuf en développement 🍰🪩**
 
