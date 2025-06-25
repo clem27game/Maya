@@ -122,74 +122,87 @@ void handle_console(char *content) {
         if (end && end != start) {
             *end = '\0';
             printf("%s\n", start);
+        } else {
+            maya_error("Syntaxe incorrecte pour my.console - guillemets manquants", 0);
         }
+    } else {
+        maya_error("Syntaxe incorrecte pour my.console - guillemets manquants", 0);
     }
 }
 
 // Fonction pour traiter les opérations mathématiques
 void handle_math(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour opération mathématique - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
     if (strstr(line, "my.math.add")) {
-        char *start = strchr(line, '(');
-        char *end = strrchr(line, ')');
-        if (start && end) {
-            start++;
-            *end = '\0';
-            int result = evaluate_expression(start);
-            printf("%d\n", result);
-        }
+        int result = evaluate_expression(start);
+        printf("%d\n", result);
     }
     else if (strstr(line, "my.math.sub")) {
-        char *start = strchr(line, '(');
-        char *end = strrchr(line, ')');
-        if (start && end) {
-            start++;
-            *end = '\0';
-            int result = evaluate_expression(start);
-            printf("%d\n", result);
-        }
+        int result = evaluate_expression(start);
+        printf("%d\n", result);
     }
     else if (strstr(line, "my.math.mult")) {
-        char *start = strchr(line, '(');
-        char *end = strrchr(line, ')');
-        if (start && end) {
-            start++;
-            *end = '\0';
-            int result = evaluate_expression(start);
-            printf("%d\n", result);
-        }
+        int result = evaluate_expression(start);
+        printf("%d\n", result);
     }
     else if (strstr(line, "my.math.div")) {
-        char *start = strchr(line, '(');
-        char *end = strrchr(line, ')');
-        if (start && end) {
-            start++;
-            *end = '\0';
-            int result = evaluate_expression(start);
-            printf("%d\n", result);
+        // Vérifier la division par zéro
+        if (strstr(start, "/ 0") || strstr(start, "/0")) {
+            maya_error("Division par zéro interdite", 0);
+            return;
         }
+        int result = evaluate_expression(start);
+        printf("%d\n", result);
+    }
+    else {
+        maya_error("Opération mathématique non reconnue", 0);
     }
 }
 
 // Fonction pour traiter les variables
 void handle_variable(char *line) {
     char *equal_pos = strchr(line, '=');
-    if (equal_pos) {
-        *equal_pos = '\0';
-        char *var_name = line;
-        char *value_str = equal_pos + 1;
-        
-        trim(var_name);
-        trim(value_str);
-        
-        // Enlever "my.variable" du début
-        if (strstr(var_name, "my.variable")) {
-            var_name = var_name + strlen("my.variable");
-            trim(var_name);
-        }
-        
-        int value = evaluate_expression(value_str);
-        set_variable(var_name, value);
+    if (!equal_pos) {
+        maya_error("Syntaxe incorrecte pour variable - signe '=' manquant", 0);
+        return;
     }
+    
+    *equal_pos = '\0';
+    char *var_name = line;
+    char *value_str = equal_pos + 1;
+    
+    trim(var_name);
+    trim(value_str);
+    
+    // Enlever "my.variable" du début
+    if (strstr(var_name, "my.variable")) {
+        var_name = var_name + strlen("my.variable");
+        trim(var_name);
+    }
+    
+    if (strlen(var_name) == 0) {
+        maya_error("Nom de variable vide", 0);
+        return;
+    }
+    
+    if (strlen(value_str) == 0) {
+        maya_error("Valeur de variable vide", 0);
+        return;
+    }
+    
+    int value = evaluate_expression(value_str);
+    set_variable(var_name, value);
+    printf("Variable '%s' = %d\n", var_name, value);
 }
 
 // Fonction pour traiter les conditions
@@ -247,23 +260,90 @@ void interpret_line(char *line) {
         // Traitement basique des conditions (simplifié)
         char *start = strchr(line, '(');
         char *end = strrchr(line, ')');
-        if (start && end) {
-            start++;
-            *end = '\0';
-            int condition_result = handle_condition(start);
-            if (condition_result) {
-                printf("Condition vraie\n");
-            } else {
-                printf("Condition fausse\n");
-            }
+        if (!start || !end) {
+            maya_error("Syntaxe incorrecte pour condition - parenthèses manquantes", 0);
+            return;
         }
+        
+        start++;
+        *end = '\0';
+        
+        if (strlen(start) == 0) {
+            maya_error("Condition vide", 0);
+            return;
+        }
+        
+        int condition_result = handle_condition(start);
+        if (condition_result) {
+            printf("Condition vraie\n");
+        } else {
+            printf("Condition fausse\n");
+        }
+    }
+    else {
+        maya_error("Commande Maya non reconnue", 0);
     }
 }
 
-int main(void) {
+// Fonction pour afficher les erreurs Maya
+void maya_error(const char *message, int line_number) {
+    printf("ERREUR MAYA [Ligne %d]: %s\n", line_number, message);
+}
+
+// Fonction pour exécuter un fichier Maya
+void execute_maya_file(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        maya_error("Impossible d'ouvrir le fichier", 0);
+        return;
+    }
+    
+    printf("=== Exécution du fichier Maya: %s ===\n", filename);
+    
+    char line[MAX_LINE_LENGTH];
+    int line_number = 1;
+    
+    while (fgets(line, sizeof(line), file)) {
+        // Enlever le saut de ligne
+        line[strcspn(line, "\n")] = '\0';
+        
+        // Ignorer les lignes vides et les commentaires
+        if (strlen(line) == 0 || line[0] == '#') {
+            line_number++;
+            continue;
+        }
+        
+        printf("[%d] %s\n", line_number, line);
+        interpret_line(line);
+        line_number++;
+    }
+    
+    fclose(file);
+    printf("=== Fin d'exécution ===\n");
+}
+
+int main(int argc, char *argv[]) {
     printf("=== Interpréteur Maya v1.0 ===\n");
     printf("Langage de programmation créatif Maya\n");
-    printf("Entrez votre code Maya (tapez 'exit' pour quitter):\n\n");
+    
+    // Si un fichier est passé en argument
+    if (argc == 2) {
+        const char *filename = argv[1];
+        
+        // Vérifier l'extension .my
+        const char *ext = strrchr(filename, '.');
+        if (ext && strcmp(ext, ".my") == 0) {
+            execute_maya_file(filename);
+            return 0;
+        } else {
+            maya_error("Le fichier doit avoir l'extension .my", 0);
+            return 1;
+        }
+    }
+    
+    // Mode interactif si aucun fichier n'est fourni
+    printf("Entrez votre code Maya (tapez 'exit' pour quitter):\n");
+    printf("Ou utilisez: ./main fichier.my pour exécuter un fichier\n\n");
     
     char line[MAX_LINE_LENGTH];
     

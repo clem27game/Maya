@@ -1,4 +1,21 @@
-my.console('Bonjour Maya!')
+
+# Fichier test Maya
+my.console('=== Test du langage Maya ===')
+
+# Test des variables
 my.variable age = 15
-my.math.add(age + 3)
+my.variable annee = 2024
+
+# Test des calculs
+my.console('Tests mathématiques:')
+my.math.add(age + 5)
+my.math.sub(annee - 10)
+my.math.mult(age * 2)
+my.math.div(annee / 4)
+
+# Test des conditions
+my.console('Tests de conditions:')
 my.if(age < 18)
+my.if(annee > 2000)
+
+my.console('=== Fin des tests ===')
