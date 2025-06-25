@@ -306,7 +306,11 @@ void interpret_line(char *line) {
         }
         
         int condition_result = handle_condition(start);
-        // Condition évaluée silencieusement
+        if (condition_result) {
+            printf("Condition vraie\n");
+        } else {
+            printf("Condition fausse\n");
+        }
     }
     else if (strstr(line, "my.")) {
         // Pour de futures fonctionnalités commençant par "my."

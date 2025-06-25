@@ -1,21 +1,38 @@
+# Exemple de code Maya avec plusieurs conditions
 
-# Fichier test Maya
-my.console('=== Test du langage Maya ===')
+my.console('=== Exemple de conditions en Maya ===')
 
-# Test des variables
-my.variable age = 15
-my.variable annee = 2024
+# Définissons quelques variables
+my.variable temperature = 25
+my.variable pluie = false
+my.variable age = 16
 
-# Test des calculs
-my.console('Tests mathématiques:')
-my.math.add(age + 5)
-my.math.sub(annee - 10)
-my.math.mult(age * 2)
-my.math.div(annee / 4)
+# Condition 1 : Vérifier la température
+my.if(temperature > 30)
+my.alors {
+    my.console('Il fait chaud aujourd\'hui !')
+}
+my.if(temperature < 15)
+my.alors {
+    my.console('Il fait frais aujourd\'hui !')
+}
 
-# Test des conditions
-my.console('Tests de conditions:')
-my.if(age < 18)
-my.if(annee > 2000)
+# Condition 2 : Vérifier si il pleut
+my.if(pluie)
+my.alors {
+    my.console('N\'oubliez pas votre parapluie !')
+}
+my.autre {
+    my.console('Pas de pluie aujourd\'hui, profitez-en !')
+}
 
-my.console('=== Fin des tests ===')
+# Condition 3 : Vérifier l'âge
+my.if(age >= 18)
+my.alors {
+    my.console('Vous êtes un adulte.')
+}
+my.autre {
+    my.console('Vous êtes un mineur.')
+}
+
+my.console('=== Fin de l\'exemple ===')
