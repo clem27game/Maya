@@ -428,13 +428,47 @@ void handle_math_median(char *line) {
     *end = '\0';
 
     printf("📊 CALCUL DE MÉDIANE MAYA 📊\n");
-    printf("Liste de nombres: %s\n", start);
 
-    // Simulation d'un calcul de médiane
-    double numbers[] = {1, 3, 5, 7, 9};
-    int count = 5;
-    double median = numbers[count/2];
+    // Parser les nombres séparés par des virgules
+    double numbers[50];
+    int count = 0;
+    char *token = strtok(start, ",");
+    
+    while (token != NULL && count < 50) {
+        trim(token);
+        numbers[count] = evaluate_expression_numeric(token);
+        count++;
+        token = strtok(NULL, ",");
+    }
 
+    if (count == 0) {
+        maya_error("Aucun nombre fourni pour le calcul de médiane", 0);
+        return;
+    }
+
+    // Trier les nombres (bubble sort simple)
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = 0; j < count - i - 1; j++) {
+            if (numbers[j] > numbers[j + 1]) {
+                double temp = numbers[j];
+                numbers[j] = numbers[j + 1];
+                numbers[j + 1] = temp;
+            }
+        }
+    }
+
+    double median;
+    if (count % 2 == 0) {
+        median = (numbers[count/2 - 1] + numbers[count/2]) / 2.0;
+    } else {
+        median = numbers[count/2];
+    }
+
+    printf("Nombres triés: ");
+    for (int i = 0; i < count; i++) {
+        printf("%.2f ", numbers[i]);
+    }
+    printf("\n");
     printf("Médiane calculée: %.2f\n", median);
 }
 
@@ -451,14 +485,30 @@ void handle_math_moyenne(char *line) {
     *end = '\0';
 
     printf("📊 CALCUL DE MOYENNE MAYA 📊\n");
-    printf("Liste de nombres: %s\n", start);
 
-    // Simulation d'un calcul de moyenne
-    double sum = 25.0;
-    int count = 5;
+    // Parser les nombres séparés par des virgules
+    double sum = 0.0;
+    int count = 0;
+    char *token = strtok(start, ",");
+    
+    while (token != NULL) {
+        trim(token);
+        double value = evaluate_expression_numeric(token);
+        sum += value;
+        count++;
+        token = strtok(NULL, ",");
+    }
+
+    if (count == 0) {
+        maya_error("Aucun nombre fourni pour le calcul de moyenne", 0);
+        return;
+    }
+
     double moyenne = sum / count;
 
-    printf("Moyenne calculée: %.2f\n", moyenne);
+    printf("Nombres: %d valeurs\n", count);
+    printf("Somme: %.2f\n", sum);
+    printf("Moyenne calculée: %.2f / %d = %.2f\n", sum, count, moyenne);
 }
 
 void handle_math_cube(char *line) {
@@ -558,15 +608,47 @@ void handle_thales(char *line) {
     *end = '\0';
 
     printf("📐 THÉORÈME DE THALÈS MAYA 📐\n");
-    printf("Paramètres: %s\n", start);
 
-    // Simulation avec valeurs par défaut
-    double a = 3.0, b = 4.0, c = 6.0;
+    // Parser les arguments: a, b, c
+    char *comma1 = strchr(start, ',');
+    if (!comma1) {
+        maya_error("my.thales nécessite trois arguments: a, b, c", 0);
+        return;
+    }
+
+    *comma1 = '\0';
+    char *a_str = start;
+    char *rest = comma1 + 1;
+
+    char *comma2 = strchr(rest, ',');
+    if (!comma2) {
+        maya_error("my.thales nécessite trois arguments: a, b, c", 0);
+        return;
+    }
+
+    *comma2 = '\0';
+    char *b_str = rest;
+    char *c_str = comma2 + 1;
+
+    trim(a_str);
+    trim(b_str);
+    trim(c_str);
+
+    double a = evaluate_expression_numeric(a_str);
+    double b = evaluate_expression_numeric(b_str);
+    double c = evaluate_expression_numeric(c_str);
+
+    if (a == 0) {
+        maya_error("Division par zéro: a ne peut pas être 0", 0);
+        return;
+    }
+
     double result = (b * c) / a;
 
     printf("Si a/b = c/d, alors d = (b×c)/a\n");
-    printf("Avec a=%.1f, b=%.1f, c=%.1f\n", a, b, c);
+    printf("Avec a=%.2f, b=%.2f, c=%.2f\n", a, b, c);
     printf("d = %.2f\n", result);
+    printf("Vérification: %.2f/%.2f = %.2f/%.2f = %.4f\n", a, b, c, result, a/b);
 }
 
 void handle_pytha(char *line) {
@@ -582,15 +664,35 @@ void handle_pytha(char *line) {
     *end = '\0';
 
     printf("📐 THÉORÈME DE PYTHAGORE MAYA 📐\n");
-    printf("Paramètres: %s\n", start);
 
-    // Simulation avec valeurs par défaut
-    double a = 3.0, b = 4.0;
+    // Parser les arguments: a, b
+    char *comma = strchr(start, ',');
+    if (!comma) {
+        maya_error("my.pytha nécessite deux arguments: a et b", 0);
+        return;
+    }
+
+    *comma = '\0';
+    char *a_str = start;
+    char *b_str = comma + 1;
+
+    trim(a_str);
+    trim(b_str);
+
+    double a = evaluate_expression_numeric(a_str);
+    double b = evaluate_expression_numeric(b_str);
+
+    if (a < 0 || b < 0) {
+        maya_error("Les côtés d'un triangle ne peuvent pas être négatifs", 0);
+        return;
+    }
+
     double c = sqrt(a*a + b*b);
 
     printf("a² + b² = c²\n");
-    printf("Avec a=%.1f et b=%.1f\n", a, b);
-    printf("c = √(%.1f² + %.1f²) = %.2f\n", a, b, c);
+    printf("Avec a=%.2f et b=%.2f\n", a, b);
+    printf("c = √(%.2f² + %.2f²) = √(%.2f + %.2f) = √%.2f = %.2f\n", a, b, a*a, b*b, a*a + b*b, c);
+    printf("✅ Hypoténuse calculée: %.2f\n", c);
 }
 
 // Fonction pour traiter les variables
@@ -2504,8 +2606,73 @@ void handle_simulation_atomes(char *line) {
     start++;
     *end = '\0';
 
+    // Enlever les guillemets si présents
+    if (start[0] == '\'' && start[strlen(start)-1] == '\'') {
+        start[strlen(start)-1] = '\0';
+        start++;
+    }
+
     printf("⚛️ SIMULATION ATOMIQUE MAYA ⚛️\n");
     printf("Type d'atome: %s\n", start);
+
+    // Base de données des éléments
+    struct {
+        char *nom;
+        char *symbole;
+        int protons;
+        int neutrons;
+        int electrons;
+        char *proprietes;
+    } elements[] = {
+        {"Hydrogene", "H", 1, 0, 1, "Gaz le plus léger, inflammable"},
+        {"Helium", "He", 2, 2, 2, "Gaz noble, très stable"},
+        {"Lithium", "Li", 3, 4, 3, "Métal alcalin, très réactif"},
+        {"Carbone", "C", 6, 6, 6, "Base de la vie organique"},
+        {"Azote", "N", 7, 7, 7, "Gaz inerte, 78% de l'atmosphère"},
+        {"Oxygene", "O", 8, 8, 8, "Vital pour la respiration"},
+        {"Fluor", "F", 9, 10, 9, "Halogène très réactif"},
+        {"Neon", "Ne", 10, 10, 10, "Gaz noble, éclairage"},
+        {"Sodium", "Na", 11, 12, 11, "Métal alcalin, forme le sel"},
+        {"Magnesium", "Mg", 12, 12, 12, "Métal léger, alliages"},
+        {"Aluminium", "Al", 13, 14, 13, "Métal léger, anti-corrosion"},
+        {"Silicium", "Si", 14, 14, 14, "Semi-conducteur, électronique"},
+        {"Phosphore", "P", 15, 16, 15, "Essentiel pour l'ADN"},
+        {"Soufre", "S", 16, 16, 16, "Forme des ponts disulfure"},
+        {"Chlore", "Cl", 17, 18, 17, "Désinfectant, forme HCl"},
+        {"Argon", "Ar", 18, 22, 18, "Gaz noble, soudage"},
+        {"Potassium", "K", 19, 20, 19, "Électrolyte important"},
+        {"Calcium", "Ca", 20, 20, 20, "Os et dents"},
+        {"Fer", "Fe", 26, 30, 26, "Métal de construction"},
+        {"Cuivre", "Cu", 29, 35, 29, "Conducteur électrique"},
+        {"Zinc", "Zn", 30, 35, 30, "Anti-corrosion, galvanisation"},
+        {"Argent", "Ag", 47, 61, 47, "Métal précieux, conducteur"},
+        {"Or", "Au", 79, 118, 79, "Métal précieux, inoxydable"},
+        {"Mercure", "Hg", 80, 121, 80, "Métal liquide toxique"},
+        {"Plomb", "Pb", 82, 125, 82, "Métal lourd toxique"},
+        {"Uranium", "U", 92, 146, 92, "Radioactif, énergie nucléaire"}
+    };
+
+    int element_count = sizeof(elements) / sizeof(elements[0]);
+    int found = -1;
+
+    // Rechercher l'élément
+    for (int i = 0; i < element_count; i++) {
+        if (strcasecmp(elements[i].nom, start) == 0 || 
+            strcasecmp(elements[i].symbole, start) == 0) {
+            found = i;
+            break;
+        }
+    }
+
+    if (found == -1) {
+        printf("❌ Élément '%s' non trouvé dans la base de données\n", start);
+        printf("💡 Éléments disponibles:\n");
+        for (int i = 0; i < element_count && i < 10; i++) {
+            printf("   - %s (%s)\n", elements[i].nom, elements[i].symbole);
+        }
+        printf("   ... et %d autres\n", element_count - 10);
+        return;
+    }
 
     printf("🔬 Analyse de la structure atomique...\n");
     usleep(600000);
@@ -2515,10 +2682,26 @@ void handle_simulation_atomes(char *line) {
     usleep(400000);
 
     printf("📊 RÉSULTATS DE LA SIMULATION:\n");
-    printf("   Protons: 6\n");
-    printf("   Neutrons: 6\n");
-    printf("   Électrons: 6\n");
-    printf("   Élément: Carbone (C)\n");
+    printf("   Élément: %s (%s)\n", elements[found].nom, elements[found].symbole);
+    printf("   Numéro atomique: %d\n", elements[found].protons);
+    printf("   Protons: %d\n", elements[found].protons);
+    printf("   Neutrons: %d\n", elements[found].neutrons);
+    printf("   Électrons: %d\n", elements[found].electrons);
+    printf("   Masse atomique: ~%d u\n", elements[found].protons + elements[found].neutrons);
+    printf("   Propriétés: %s\n", elements[found].proprietes);
+
+    // Configuration électronique simplifiée
+    printf("   Configuration électronique: ");
+    int electrons = elements[found].electrons;
+    int shells[] = {2, 8, 18, 32}; // Capacité des couches K, L, M, N
+    
+    for (int shell = 0; shell < 4 && electrons > 0; shell++) {
+        int e_in_shell = (electrons > shells[shell]) ? shells[shell] : electrons;
+        printf("%d ", e_in_shell);
+        electrons -= e_in_shell;
+    }
+    printf("\n");
+
     printf("✅ Simulation atomique terminée!\n");
 }
 
