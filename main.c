@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <dlfcn.h>
 #include <sys/wait.h>
+#include <math.h>
 
 #define MAX_LINE_LENGTH 1000
 #define MAX_VARIABLES 100
@@ -512,6 +513,12 @@ void handle_math_racine(char *line) {
     *end = '\0';
     
     int number = evaluate_expression_numeric(start);
+    
+    if (number < 0) {
+        maya_error("Impossible de calculer la racine d'un nombre négatif", 0);
+        return;
+    }
+    
     double result = sqrt((double)number);
     
     printf("🔢 CALCUL DE RACINE MAYA 🔢\n");

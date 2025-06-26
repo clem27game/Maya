@@ -1,0 +1,35 @@
+
+# Test simple Maya v5.0 - Vérification des nouvelles fonctionnalités
+
+my.console('🌸 === TEST MAYA v5.0 SIMPLE === 🌸')
+
+# Test 1: Nouvelles mathématiques
+my.console('🧮 Test mathématiques avancées:')
+my.math.cube(3)
+my.math.carre(5)
+my.math.racine(16)
+
+# Test 2: Théorèmes
+my.console('📐 Test théorèmes:')
+my.pytha(3, 4)
+my.thales(2, 3, 6)
+
+# Test 3: Base de données
+my.console('🗄️ Test base de données:')
+my.db('TEST1234', 'Données de test Maya v5.0')
+my.send.db('TEST1234')
+
+# Test 4: Code C intégré
+my.console('⚡ Test code C:')
+my.execute.c('printf("Hello from C!\\n");')
+
+# Test 5: Simulations
+my.console('🌌 Test simulations:')
+my.simulation.timetravel(5)
+my.simulation.fairy('Test conte')
+
+# Test 6: Exercices
+my.console('📚 Test exercices:')
+my.exercice.math()
+
+my.console('✅ Test Maya v5.0 terminé!')
