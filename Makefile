@@ -10,11 +10,11 @@ all: $(TARGET)
 
 # Compilation normale
 $(TARGET): $(SOURCE)
-	$(CC) $(CFLAGS) -O2 -o $(TARGET) $(SOURCE)
+	$(CC) $(CFLAGS) -O2 -o $(TARGET) $(SOURCE) -lm -ldl
 
 # Compilation avec debug
 $(TARGET_DEBUG): $(SOURCE)
-	$(CC) $(CFLAGS) -DDEBUG -o $(TARGET_DEBUG) $(SOURCE)
+	$(CC) $(CFLAGS) -DDEBUG -o $(TARGET_DEBUG) $(SOURCE) -lm -ldl
 
 # Nettoyage
 clean:

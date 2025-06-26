@@ -689,7 +689,9 @@ void handle_delai(char *line) {
     *end = '\0';
     
     int milliseconds = evaluate_expression_numeric(start);
-    usleep(milliseconds * 1000); // convertir en microsecondes
+    if (milliseconds > 0) {
+        usleep((useconds_t)(milliseconds * 1000)); // convertir en microsecondes
+    }
 }
 
 // Fonctions de dessin ASCII
@@ -1040,6 +1042,8 @@ void handle_dice(char *line) {
 
 // Fonction pour traiter my.puissance4
 void handle_puissance4(char *line) {
+    (void)line; // Marquer le paramètre comme volontairement inutilisé
+    
     printf("🔴🟡 PUISSANCE 4 MAYA 🟡🔴\n");
     printf("Créez votre propre jeu de Puissance 4!\n");
     printf("Grille 7x6 initialisée:\n");
@@ -1120,6 +1124,8 @@ void handle_worldgame(char *line) {
 
 // Fonction pour traiter my.rock.leaf
 void handle_rock_leaf(char *line) {
+    (void)line; // Marquer le paramètre comme volontairement inutilisé
+    
     printf("🪨📄✂️ PIERRE-FEUILLE-CISEAU MAYA ✂️📄🪨\n");
     printf("Choisissez: 1=Pierre, 2=Feuille, 3=Ciseau\n");
     printf("Votre choix: ");
@@ -1190,6 +1196,8 @@ void handle_devine_number(char *line) {
 
 // Fonction pour traiter my.snake
 void handle_snake(char *line) {
+    (void)line; // Marquer le paramètre comme volontairement inutilisé
+    
     printf("🐍 SNAKE MAYA 🐍\n");
     printf("Créez votre propre jeu Snake!\n");
     printf("Grille 20x10:\n");
@@ -1217,14 +1225,10 @@ void handle_snake(char *line) {
 
 // Fonction pour traiter my.tictac
 void handle_tictac(char *line) {
+    (void)line; // Marquer le paramètre comme volontairement inutilisé
+    
     printf("❌⭕ TIC TAC TOE MAYA ⭕❌\n");
     printf("Grille 3x3:\n");
-    
-    char grid[3][3] = {
-        {' ', ' ', ' '},
-        {' ', ' ', ' '},
-        {' ', ' ', ' '}
-    };
     
     printf(" 1 | 2 | 3 \n");
     printf("-----------\n");
@@ -1268,6 +1272,8 @@ void handle_memory(char *line) {
 
 // Fonction pour traiter my.simulation.bac
 void handle_simulation_bac(char *line) {
+    (void)line; // Marquer le paramètre comme volontairement inutilisé
+    
     printf("🎓 SIMULATION BAC MAYA 🎓\n");
     
     srand(time(NULL));
@@ -2253,6 +2259,8 @@ void get_package_info(int func_index, int *package_index, int *local_index) {
 
 // Fonction pour appeler une fonction de package
 void call_package_function(char *function_name, char *args) {
+    (void)args; // Marquer le paramètre comme volontairement inutilisé pour l'instant
+    
     int func_index = find_package_function(function_name);
     
     if (func_index == -1) {
@@ -2295,6 +2303,8 @@ int find_maya_function(char *name) {
 
 // Fonction pour exécuter une fonction Maya réutilisable
 void execute_maya_function(char *function_name, char *args) {
+    (void)args; // Marquer le paramètre comme volontairement inutilisé pour l'instant
+    
     int func_index = find_maya_function(function_name);
     
     if (func_index == -1) {
@@ -2762,6 +2772,8 @@ void handle_exercice_create(char *line) {
 }
 
 void handle_exercice_gest_pgi(char *line) {
+    (void)line; // Marquer le paramètre comme volontairement inutilisé
+    
     printf("💼 EXERCICE PGI MAYA - BAC STMG 💼\n");
     printf("📊 Progiciel de Gestion Intégrée\n");
     printf("❓ Question: Quels sont les modules d'un PGI?\n");
@@ -2770,6 +2782,8 @@ void handle_exercice_gest_pgi(char *line) {
 }
 
 void handle_exercice_gest_treso(char *line) {
+    (void)line; // Marquer le paramètre comme volontairement inutilisé
+    
     printf("💰 EXERCICE TRÉSORERIE MAYA - BAC STMG 💰\n");
     printf("📈 Gestion financière\n");
     printf("❓ Calculez: FRNG = Capitaux permanents - Actif immobilisé\n");
@@ -2779,6 +2793,8 @@ void handle_exercice_gest_treso(char *line) {
 }
 
 void handle_exercice_math(char *line) {
+    (void)line; // Marquer le paramètre comme volontairement inutilisé
+    
     printf("🔢 EXERCICE MATHÉMATIQUES MAYA 🔢\n");
     printf("📐 Mathématiques BAC Général/STMG\n");
     printf("❓ Question: Résolvez l'équation du second degré\n");
@@ -2788,6 +2804,8 @@ void handle_exercice_math(char *line) {
 }
 
 void handle_exercice_histoire(char *line) {
+    (void)line; // Marquer le paramètre comme volontairement inutilisé
+    
     printf("🏛️ EXERCICE HISTOIRE-GÉO MAYA 🏛️\n");
     printf("🌍 Histoire-Géographie\n");
     printf("❓ Question: Quelles sont les causes de la Première Guerre mondiale?\n");
@@ -2796,6 +2814,8 @@ void handle_exercice_histoire(char *line) {
 }
 
 void handle_exercice_mana(char *line) {
+    (void)line; // Marquer le paramètre comme volontairement inutilisé
+    
     printf("👔 EXERCICE MANAGEMENT MAYA - BAC STMG 👔\n");
     printf("🏢 Sciences de gestion et management\n");
     printf("❓ Question: Définissez les styles de management\n");
