@@ -1,0 +1,220 @@
+
+#!/bin/bash
+
+# Script de commande globale Maya v5.0
+# Permet d'exécuter 'maya run <fichier>' depuis n'importe où
+
+# Couleurs pour l'affichage
+RED='\033[31m'
+GREEN='\033[32m'
+YELLOW='\033[33m'
+BLUE='\033[34m'
+PINK='\033[95m'
+RESET='\033[0m'
+
+# Fonction pour afficher l'aide
+show_help() {
+    echo -e "${PINK}🌸 === MAYA v5.0 - COMMANDES GLOBALES === 🌸${RESET}"
+    echo -e "${BLUE}Usage:${RESET}"
+    echo -e "  ${GREEN}maya run <fichier.my>${RESET}     - Exécuter un fichier Maya"
+    echo -e "  ${GREEN}maya interactive${RESET}         - Mode interactif Maya"
+    echo -e "  ${GREEN}maya create <nom>${RESET}        - Créer nouveau projet Maya"
+    echo -e "  ${GREEN}maya version${RESET}             - Afficher la version"
+    echo -e "  ${GREEN}maya help${RESET}                - Afficher cette aide"
+    echo ""
+    echo -e "${YELLOW}Exemples:${RESET}"
+    echo -e "  maya run mon_programme.my"
+    echo -e "  maya create mon_projet"
+    echo -e "  maya interactive"
+}
+
+# Fonction pour trouver l'exécutable Maya
+find_maya_executable() {
+    # Chercher d'abord dans le répertoire courant
+    if [ -f "./main" ]; then
+        echo "./main"
+        return 0
+    fi
+    
+    # Chercher dans le dossier home/runner/workspace (Replit)
+    if [ -f "/home/runner/workspace/main" ]; then
+        echo "/home/runner/workspace/main"
+        return 0
+    fi
+    
+    # Chercher dans le PATH
+    MAYA_PATH=$(which maya-interpreter 2>/dev/null)
+    if [ -n "$MAYA_PATH" ]; then
+        echo "$MAYA_PATH"
+        return 0
+    fi
+    
+    # Chercher dans des dossiers communs
+    for dir in /usr/local/bin /opt/maya ~/maya ~/.local/bin; do
+        if [ -f "$dir/main" ]; then
+            echo "$dir/main"
+            return 0
+        fi
+    done
+    
+    return 1
+}
+
+# Fonction pour exécuter un fichier Maya
+maya_run() {
+    local file="$1"
+    
+    if [ -z "$file" ]; then
+        echo -e "${RED}❌ Erreur: Fichier manquant${RESET}"
+        echo -e "${YELLOW}Usage: maya run <fichier.my>${RESET}"
+        return 1
+    fi
+    
+    # Vérifier que le fichier existe
+    if [ ! -f "$file" ]; then
+        echo -e "${RED}❌ Fichier non trouvé: $file${RESET}"
+        return 1
+    fi
+    
+    # Vérifier l'extension .my
+    if [[ ! "$file" =~ \.my$ ]]; then
+        echo -e "${YELLOW}⚠️  Attention: Le fichier ne semble pas être un fichier Maya (.my)${RESET}"
+    fi
+    
+    # Trouver l'exécutable Maya
+    MAYA_EXEC=$(find_maya_executable)
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}❌ Impossible de trouver l'interpréteur Maya${RESET}"
+        echo -e "${YELLOW}💡 Assurez-vous que Maya est installé et compilé${RESET}"
+        return 1
+    fi
+    
+    echo -e "${PINK}🌸 Exécution de Maya: $file${RESET}"
+    echo -e "${BLUE}📂 Interpréteur: $MAYA_EXEC${RESET}"
+    echo ""
+    
+    # Exécuter le fichier Maya
+    "$MAYA_EXEC" "$file"
+}
+
+# Fonction pour le mode interactif
+maya_interactive() {
+    MAYA_EXEC=$(find_maya_executable)
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}❌ Impossible de trouver l'interpréteur Maya${RESET}"
+        return 1
+    fi
+    
+    echo -e "${PINK}🌸 Lancement du mode interactif Maya${RESET}"
+    "$MAYA_EXEC"
+}
+
+# Fonction pour créer un nouveau projet
+maya_create() {
+    local project_name="$1"
+    
+    if [ -z "$project_name" ]; then
+        echo -e "${RED}❌ Erreur: Nom de projet manquant${RESET}"
+        echo -e "${YELLOW}Usage: maya create <nom_projet>${RESET}"
+        return 1
+    fi
+    
+    # Créer le dossier du projet
+    if [ -d "$project_name" ]; then
+        echo -e "${YELLOW}⚠️  Le dossier '$project_name' existe déjà${RESET}"
+        return 1
+    fi
+    
+    mkdir -p "$project_name"
+    cd "$project_name"
+    
+    # Créer un fichier Maya d'exemple
+    cat > "main.my" << EOF
+# Projet Maya: $project_name
+# Créé automatiquement par Maya CLI
+
+my.console('🌸 Bienvenue dans votre projet Maya: $project_name 🌸')
+my.console('Ce fichier a été créé automatiquement!')
+
+# Exemples de fonctionnalités Maya v5.0
+my.variable nom_projet = '$project_name'
+my.console('Nom du projet: ' + nom_projet)
+
+# Mathématiques
+my.math.carre(5)
+my.math.racine(16)
+
+# Dessin ASCII
+my.draw.heart
+
+# Simulation
+my.simulation.bac()
+
+my.console('✅ Votre projet Maya est prêt!')
+my.console('💡 Utilisez: maya run main.my pour exécuter')
+EOF
+    
+    # Créer un README
+    cat > "README.md" << EOF
+# Projet Maya: $project_name
+
+Ce projet a été créé avec Maya v5.0.
+
+## Utilisation
+
+\`\`\`bash
+maya run main.my
+\`\`\`
+
+## À propos de Maya
+
+Maya est un langage de programmation créatif qui permet:
+- 🧮 Mathématiques avancées
+- 🎮 Mini-jeux
+- 🌌 Simulations
+- 🎨 Dessins ASCII
+- 📦 Packages C personnalisés
+
+Pour plus d'informations: https://github.com/clem27game/Maya
+EOF
+    
+    echo -e "${GREEN}✅ Projet '$project_name' créé avec succès!${RESET}"
+    echo -e "${BLUE}📂 Dossier: $(pwd)${RESET}"
+    echo -e "${YELLOW}💡 Exécutez: maya run main.my${RESET}"
+}
+
+# Fonction pour afficher la version
+maya_version() {
+    echo -e "${PINK}🌸 Maya v5.0 - Le langage de la créativité 🌸${RESET}"
+    echo -e "${BLUE}Créé par nekoclem (Clémence Baril)${RESET}"
+    echo -e "${GREEN}✨ Nouvelles fonctionnalités v5.0:${RESET}"
+    echo -e "  🧮 Mathématiques avancées"
+    echo -e "  🗄️ Bases de données intégrées"
+    echo -e "  ⚡ Exécution de code C"
+    echo -e "  🌌 Simulations fantastiques"
+    echo -e "  📚 Exercices BAC"
+}
+
+# Parser les arguments
+case "$1" in
+    "run")
+        maya_run "$2"
+        ;;
+    "interactive"|"inter"|"i")
+        maya_interactive
+        ;;
+    "create"|"new")
+        maya_create "$2"
+        ;;
+    "version"|"--version"|"-v")
+        maya_version
+        ;;
+    "help"|"--help"|"-h"|"")
+        show_help
+        ;;
+    *)
+        echo -e "${RED}❌ Commande inconnue: $1${RESET}"
+        echo -e "${YELLOW}Utilisez 'maya help' pour voir les commandes disponibles${RESET}"
+        exit 1
+        ;;
+esac

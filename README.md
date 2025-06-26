@@ -10,13 +10,35 @@ Maya permet à sa communauté de développeurs d'être ultra-créatif : mathéma
 
 **🧶 Installation**
 
-pour installer maya, copier son lien de partage et cloné son repos github ici présent avec :
-
-``` 
+### Installation Standard
+```bash
 git clone https://github.com/clem27game/Maya
+cd Maya
+make
+```
 
-make (exécuter un fichier maya) :
-./Maya/main fichier.my
+### Installation Globale (Recommandée)
+Pour utiliser Maya depuis n'importe où avec `maya run <fichier>`:
+
+```bash
+git clone https://github.com/clem27game/Maya
+cd Maya
+make
+chmod +x install_maya.sh
+./install_maya.sh
+```
+
+### Utilisation
+```bash
+# Commandes globales (après installation globale)
+maya run mon_fichier.my       # Exécuter un fichier Maya
+maya interactive              # Mode interactif
+maya create mon_projet        # Créer un nouveau projet
+maya version                  # Afficher la version
+maya help                     # Aide complète
+
+# Commande locale (installation standard)
+./main fichier.my
 ```
 
 ---
