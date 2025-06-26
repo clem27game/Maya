@@ -15,8 +15,9 @@ pour installer maya, copier son lien de partage et cloné son repos github ici p
 
 ``` 
 git clone https://github.com/clem27game/Maya
-make
-./main fichier.my
+
+make (exécuter un fichier maya) :
+./Maya/main fichier.my
 ```
 
 ---
@@ -308,7 +309,7 @@ may.package.message_perso()
 
 ### **Mode Fichier:**
 ```bash
-./main mon_programme.my
+./Maya/main mon_programme.my
 ```
 
 ### **Mode Interactif:**
