@@ -1,0 +1,55 @@
+
+# Test complet des nouvelles fonctionnalités Maya v6.0
+
+my.console('🌸 === Tests Maya v6.0 - Nouvelles Fonctionnalités === 🌸')
+
+# Test 1: Chatbot personnalisé
+my.console('🤖 Test 1: Création d'un chatbot')
+my.create.robot('TestBot', 'bonjour:Salut! Je suis TestBot!,aide:Je peux vous aider!,code:Voici du code Maya!')
+
+# Test 2: Boucles
+my.console('🔄 Test 2: Boucles avancées')
+my.for(i, 1, 3)
+my.loop(2)
+my.while(x < 1)
+
+# Test 3: Palettes créatives
+my.console('🎨 Test 3: Palettes créatives')
+my.palette('mouton', 'ROSE')
+my.palette('oiseau', 'BLEU')
+my.palette('abeille', 'JAUNE')
+
+# Test 4: Jeu personnalisé
+my.console('🎮 Test 4: Création de jeu')
+my.owngame('Mon jeu d\'aventure Maya')
+
+# Test 5: Modification console
+my.console('💬 Test 5: Modification dynamique')
+my.modifie.console('Test en cours...', 1000, 'Test terminé!')
+
+# Test 6: Menu interactif
+my.console('📋 Test 6: Menu interactif')
+my.interactive('Menu de test Maya')
+
+# Test 7: Inventaire
+my.console('🎒 Test 7: Système d\'inventaire')
+my.inventaire('ajouter', 'épée', 'objet', 'Épée magique')
+my.inventaire('ajouter', 'or', 'nombre', '500')
+my.inventaire()
+my.inventaire('utiliser', 'épée')
+
+# Test 8: Histoires
+my.console('📖 Test 8: Création d\'histoires')
+my.histoire.recit('Il était une fois Maya v6.0, le langage révolutionnaire...')
+my.histoire.end('Et Maya révolutionna le monde de la programmation!')
+
+# Test 9: Simulations personnalisées
+my.console('🐾 Test 9: Simulations personnalisées')
+my.own.pet('Dragon de code Maya')
+my.nombre.pet()
+
+my.own.titan('Titan des algorithmes')
+my.nombre.titan()
+
+my.console('🎉 Tous les tests Maya v6.0 terminés avec succès! 🎉')
+my.console('✨ Maya v6.0 - L\'imagination sans limites! ✨')

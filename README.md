@@ -1,12 +1,12 @@
-# **🧡💖🍓 Langage De programmation Maya v5.0!❤️🐬**
+# **🧡💖🍓 Langage De programmation Maya v6.0!❤️🐬**
 
 ![maya](http://www.image-heberg.fr/files/17507795351188297358.webp)
 
-**Maya v5.0 est maintenant le langage de programmation le plus créatif et complet! 🍰🪩**
+**Maya v6.0 est maintenant le langage de programmation le plus créatif et révolutionnaire! 🍰🪩**
 
-Maya permet à sa communauté de développeurs d'être ultra-créatif : mathématiques avancées, bases de données, exécution de code C intégré, simulations fantastiques, exercices éducatifs, contes magiques et bien plus!
+Maya permet à sa communauté de développeurs d'être ultra-créatif : chatbots personnalisés, boucles avancées, palettes créatives, jeux personnalisés, histoires interactives, inventaires dynamiques et bien plus!
 
-🛑**Maya v5.0 - Le langage de la créativité totale!🛑**
+🛑**Maya v6.0 - L'imagination sans limites!🛑**
 
 **🧶 Installation**
 
@@ -43,7 +43,100 @@ maya help                     # Aide complète
 
 ---
 
-## **🌟 NOUVELLES FONCTIONNALITÉS v5.0 🌟**
+## **🌟 NOUVELLES FONCTIONNALITÉS v6.0 🌟**
+
+### **🤖 1. CHATBOTS PERSONNALISÉS**
+
+**Création de robots conversationnels:**
+- `my.create.robot('NomRobot', 'mot1:réponse1,mot2:réponse2')` - Créer un chatbot interactif
+
+**Exemple:**
+```my
+my.create.robot('Maya-Assistant', 'bonjour:Salut! Comment allez-vous?,aide:Je suis là pour vous aider!,bye:Au revoir!')
+```
+
+### **🔄 2. BOUCLES ET CONTRÔLE DE FLUX**
+
+**Nouvelles structures de boucles:**
+- `my.while(condition)` - Boucle tant que condition vraie
+- `my.for(variable, début, fin)` - Boucle for classique
+- `my.loop(nombre)` - Boucle simple avec répétitions
+
+**Exemple:**
+```my
+my.for(i, 1, 5)  # Compte de 1 à 5
+my.while(x < 10)  # Tant que x < 10
+my.loop(3)  # Répète 3 fois
+```
+
+### **🎨 3. FONCTIONS DE CRÉATIVITÉ**
+
+**Palettes créatives:**
+- `my.palette('dessin', 'couleur')` - Créer des dessins ASCII colorés personnalisés
+
+**Jeux personnalisés:**
+- `my.owngame('concept')` - Créer votre propre jeu interactif
+
+**Exemple:**
+```my
+my.palette('mouton', 'ROSE')  # Mouton rose
+my.palette('oiseau', 'BLEU')  # Oiseau bleu
+my.palette('abeille', 'JAUNE')  # Abeille jaune
+my.owngame('Mon aventure épique')
+```
+
+### **💬 4. FONCTIONS AVANCÉES**
+
+**Modification dynamique:**
+- `my.modifie.console('message_original', délai, 'message_modifié')` - Changer le texte après un délai
+
+**Menus interactifs:**
+- `my.interactive('titre')` - Créer des menus de sélection ASCII
+
+**Système d'inventaire:**
+- `my.inventaire('action', 'nom', 'type', 'valeur')` - Gérer un inventaire dynamique
+
+**Exemple:**
+```my
+my.modifie.console('Chargement...', 2000, 'Chargement terminé!')
+my.interactive('Menu Principal')
+my.inventaire('ajouter', 'épée', 'objet', 'Épée magique +10')
+my.inventaire('utiliser', 'épée')
+```
+
+### **📖 5. CRÉATION D'HISTOIRES**
+
+**Récits personnalisés:**
+- `my.histoire.recit('votre_histoire')` - Afficher votre histoire en couleur
+- `my.histoire.end('fin_personnalisée')` - Terminer avec style
+
+**Exemple:**
+```my
+my.histoire.recit('Il était une fois, dans un royaume de code...')
+my.histoire.end('Et ils codèrent heureux pour toujours!')
+```
+
+### **🐾 6. CRÉATIONS DIVERSES**
+
+**Simulations personnalisées:**
+- `my.own.pet('histoire_animal')` - Créer votre simulation d'animal
+- `my.own.titan('légende_titan')` - Créer votre épopée de titan
+
+**Statistiques aléatoires:**
+- `my.nombre.pet()` - Générer des stats d'animaux
+- `my.nombre.titan()` - Générer des stats épiques
+
+**Exemple:**
+```my
+my.own.pet('Mon dragon domestique Maya')
+my.nombre.pet()
+my.own.titan('Le titan des codes éternels')
+my.nombre.titan()
+```
+
+---
+
+## **🌟 FONCTIONNALITÉS v5.0 (CONSERVÉES) 🌟**
 
 ### **🧮 1. MATHÉMATIQUES AVANCÉES**
 
@@ -206,7 +299,107 @@ may.package.ma_fonction()
 
 ---
 
-## **💻 EXEMPLES COMPLETS v5.0**
+## **💻 EXEMPLES COMPLETS v6.0**
+
+### **Exemple 1: Chatbot Interactif avec Boucles**
+```my
+my.console('🤖 Création d\'un assistant personnel')
+
+# Créer un chatbot intelligent
+my.create.robot('Assistant-Maya', 'aide:Je peux vous aider avec Maya!,code:Voici un exemple de code,merci:De rien!')
+
+# Utiliser des boucles pour répéter des actions
+my.for(i, 1, 3)
+my.console('Initialisation système ' + i)
+
+my.loop(2)
+my.console('Tests de compatibilité...')
+```
+
+### **Exemple 2: Jeu Créatif avec Palette et Inventaire**
+```my
+my.console('🎮 Création d\'un jeu d\'aventure personnalisé')
+
+# Initialiser l'inventaire
+my.inventaire('ajouter', 'potion', 'objet', 'Potion de vie +50')
+my.inventaire('ajouter', 'or', 'nombre', '100')
+
+# Créer des éléments visuels colorés
+my.palette('dragon', 'ROUGE')
+my.palette('trésor', 'JAUNE')
+
+# Lancer le jeu
+my.owngame('L\'aventure du développeur Maya')
+
+# Utiliser l'inventaire
+my.inventaire('utiliser', 'potion')
+```
+
+### **Exemple 3: Histoire Interactive avec Modifications**
+```my
+my.console('📖 Création d\'une histoire interactive')
+
+# Commencer l'histoire
+my.histoire.recit('Un développeur découvrit Maya, le langage magique...')
+
+# Modifier dynamiquement le texte
+my.modifie.console('L\'histoire commence...', 1500, 'L\'aventure débute vraiment!')
+
+# Menu interactif pour les choix
+my.interactive('Choisissez votre voie')
+
+# Terminer l'histoire
+my.histoire.end('Et Maya devint le langage de tous les rêves!')
+```
+
+### **Exemple 4: Simulation Complète avec Statistiques**
+```my
+my.console('🐾 Simulation complète d\'animaux légendaires')
+
+# Créer une simulation personnalisée
+my.own.pet('Phoenix Maya, l\'oiseau de feu du code')
+
+# Générer des statistiques
+my.nombre.pet()
+
+# Boucle pour multiple créatures
+my.for(creature, 1, 3)
+my.own.titan('Titan ' + creature + ' des algorithmes')
+my.nombre.titan()
+
+# Palette créative pour visualiser
+my.palette('phoenix', 'ORANGE')
+```
+
+### **Exemple 5: Application Complète Maya v6.0**
+```my
+my.console('🚀 Application complète Maya v6.0')
+
+# Interface avec menu
+my.interactive('Application Maya-Creator')
+
+# Créer un chatbot assistant
+my.create.robot('Guide-Maya', 'start:Bienvenue dans Maya!,help:Tapez help pour l\'aide')
+
+# Système d'inventaire pour les ressources
+my.inventaire('ajouter', 'créativité', 'stat', '100')
+my.inventaire('ajouter', 'inspiration', 'stat', '95')
+
+# Histoire de l'application
+my.histoire.recit('Cette application révolutionne la programmation créative...')
+
+# Simulations avancées
+my.own.pet('L\'esprit créatif de Maya')
+my.own.titan('Le titan de l\'innovation')
+
+# Affichage final avec modification
+my.modifie.console('Chargement des fonctionnalités...', 2000, 'Maya v6.0 prêt!')
+
+# Fin épique
+my.histoire.end('L\'avenir de la programmation créative commence maintenant!')
+```
+
+## **💻 EXEMPLES COMPLETS v5.0 (CONSERVÉS)**
 
 ### **Exemple 1: Mathématiques et Sciences**
 ```my
@@ -388,19 +581,24 @@ maya> exit
 
 ## **🌈 MAYA v5.0 - RÉCAPITULATIF COMPLET**
 
-**📊 Statistiques Maya v5.0:**
-- ✅ **50+ fonctions natives**
-- ✅ **15+ mini-jeux complets**
-- ✅ **20+ simulations réalistes**
-- ✅ **10+ nouvelles simulations fantastiques**
+**📊 Statistiques Maya v6.0:**
+- ✅ **65+ fonctions natives**
+- ✅ **15+ mini-jeux complets + créateur de jeux**
+- ✅ **25+ simulations réalistes et personnalisées**
+- ✅ **Chatbots personnalisés interactifs**
+- ✅ **Boucles et contrôle de flux complet**
+- ✅ **Palettes créatives et dessins colorés**
+- ✅ **Système d'inventaire dynamique**
+- ✅ **Création d'histoires interactives**
+- ✅ **Menus interactifs ASCII**
+- ✅ **Modification console en temps réel**
 - ✅ **Mathématiques niveau BAC+**
 - ✅ **Bases de données intégrées**
 - ✅ **Code C exécutable dans .my**
 - ✅ **Exercices éducatifs BAC**
 - ✅ **Système de packages C simplifié**
 - ✅ **Variables et conditions avancées**
-- ✅ **Dessins ASCII variés**
-- ✅ **Interface colorée et interactive**
+- ✅ **Interface créative ultime**
 
 ---
 
@@ -408,8 +606,8 @@ maya> exit
 
 **Le langage de programmation Maya a été imaginé et créé de A à Z toute seule par nekoclem (de son vrai nom Clémence Baril), née le 12 février 2007 ayant toujours rêvé de créer son propre langage de programmation.**
 
-**Maya v5.0 est maintenant le langage de programmation créatif le plus complet au monde!**
+**Maya v6.0 est maintenant le langage de programmation le plus révolutionnaire et créatif au monde!**
 
-**🧡 Bon codage dans l'univers Maya v5.0! 💖**
+**🧡 Bon codage dans l'univers Maya v6.0! 💖**
 
-🌸 **Maya - Où la créativité rencontre la programmation!** 🌸
+🌸 **Maya - Où l'imagination devient réalité!** 🌸
