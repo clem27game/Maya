@@ -176,6 +176,23 @@ int validate_db_id(char *id);
 int find_database(char *id);
 char* extract_c_code(char *maya_line);
 
+// Nouvelles fonctionnalités v6.0
+void handle_create_robot(char *line);
+void handle_for_loop(char *line);
+void handle_while_loop(char *line);
+void handle_loop(char *line);
+void handle_palette(char *line);
+void handle_owngame(char *line);
+void handle_modifie_console(char *line);
+void handle_interactive(char *line);
+void handle_inventaire(char *line);
+void handle_histoire_recit(char *line);
+void handle_histoire_end(char *line);
+void handle_own_pet(char *line);
+void handle_own_titan(char *line);
+void handle_nombre_pet(char *line);
+void handle_nombre_titan(char *line);
+
 // Fonction pour afficher les erreurs Maya
 void maya_error(const char *message, int line_number) {
     if (line_number > 0) {
@@ -3267,6 +3284,881 @@ void handle_exercice_create(char *line) {
     printf("✅ Exercice prêt à être utilisé!\n");
 }
 
+// ========== NOUVELLES FONCTIONNALITÉS MAYA v6.0 ==========
+
+// Fonction pour créer des chatbots personnalisés
+void handle_create_robot(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.create.robot - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    // Parser les arguments: nom, réponses
+    char *comma = strchr(start, ',');
+    if (!comma) {
+        maya_error("my.create.robot nécessite deux arguments: nom et réponses", 0);
+        return;
+    }
+
+    *comma = '\0';
+    char *robot_name = start;
+    char *responses = comma + 1;
+
+    trim(robot_name);
+    trim(responses);
+
+    // Enlever les guillemets
+    if (robot_name[0] == '\'' && robot_name[strlen(robot_name)-1] == '\'') {
+        robot_name[strlen(robot_name)-1] = '\0';
+        robot_name++;
+    }
+    if (responses[0] == '\'' && responses[strlen(responses)-1] == '\'') {
+        responses[strlen(responses)-1] = '\0';
+        responses++;
+    }
+
+    printf("🤖 CRÉATION CHATBOT MAYA v6.0 🤖\n");
+    printf("Nom du robot: %s\n", robot_name);
+    printf("🧠 Installation de l'intelligence artificielle...\n");
+    usleep(800000);
+    printf("💬 Configuration des réponses conversationnelles...\n");
+    usleep(600000);
+    
+    // Parser les réponses (format: mot1:réponse1,mot2:réponse2)
+    printf("📚 Base de connaissances du robot:\n");
+    char *token = strtok(responses, ",");
+    int response_count = 0;
+    
+    while (token != NULL && response_count < 10) {
+        char *colon = strchr(token, ':');
+        if (colon) {
+            *colon = '\0';
+            char *keyword = token;
+            char *response = colon + 1;
+            trim(keyword);
+            trim(response);
+            printf("   🔹 %s → %s\n", keyword, response);
+            response_count++;
+        }
+        token = strtok(NULL, ",");
+    }
+
+    printf("✅ Chatbot '%s' créé avec succès!\n", robot_name);
+    printf("🎯 %d réponses programmées\n", response_count);
+    printf("🗣️ %s: 'Bonjour! Je suis %s, votre assistant Maya!'\n", robot_name, robot_name);
+}
+
+// Fonction pour les boucles for
+void handle_for_loop(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.for - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    // Parser les arguments: variable, début, fin
+    char *comma1 = strchr(start, ',');
+    if (!comma1) {
+        maya_error("my.for nécessite trois arguments: variable, début, fin", 0);
+        return;
+    }
+
+    *comma1 = '\0';
+    char *var_name = start;
+    char *rest = comma1 + 1;
+
+    char *comma2 = strchr(rest, ',');
+    if (!comma2) {
+        maya_error("my.for nécessite trois arguments: variable, début, fin", 0);
+        return;
+    }
+
+    *comma2 = '\0';
+    char *debut_str = rest;
+    char *fin_str = comma2 + 1;
+
+    trim(var_name);
+    trim(debut_str);
+    trim(fin_str);
+
+    int debut = evaluate_expression_numeric(debut_str);
+    int fin = evaluate_expression_numeric(fin_str);
+
+    printf("🔄 BOUCLE FOR MAYA v6.0 🔄\n");
+    printf("Variable: %s, de %d à %d\n", var_name, debut, fin);
+
+    for (int i = debut; i <= fin; i++) {
+        printf("   Itération %s = %d\n", var_name, i);
+        // Stocker la variable pour utilisation ultérieure
+        char value_str[20];
+        sprintf(value_str, "%d", i);
+        set_variable(var_name, value_str, 1);
+        usleep(200000); // Petite pause pour visualiser
+    }
+
+    printf("✅ Boucle for terminée!\n");
+}
+
+// Fonction pour les boucles while
+void handle_while_loop(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.while - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    printf("🔄 BOUCLE WHILE MAYA v6.0 🔄\n");
+    printf("Condition: %s\n", start);
+
+    int iterations = 0;
+    int max_iterations = 100; // Sécurité contre boucles infinies
+
+    while (handle_condition(start) && iterations < max_iterations) {
+        printf("   Itération %d - Condition vraie\n", iterations + 1);
+        iterations++;
+        usleep(300000);
+        
+        // Mise à jour simple pour éviter boucle infinie
+        if (strstr(start, "x") && iterations == 1) {
+            set_variable("x", "1", 1);
+        }
+    }
+
+    if (iterations >= max_iterations) {
+        printf("⚠️ Boucle arrêtée pour éviter l'infini (%d itérations max)\n", max_iterations);
+    } else {
+        printf("✅ Boucle while terminée après %d itérations\n", iterations);
+    }
+}
+
+// Fonction pour les boucles simples
+void handle_loop(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.loop - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    int repetitions = evaluate_expression_numeric(start);
+
+    printf("🔄 BOUCLE SIMPLE MAYA v6.0 🔄\n");
+    printf("Nombre de répétitions: %d\n", repetitions);
+
+    for (int i = 1; i <= repetitions; i++) {
+        printf("   🔁 Exécution %d/%d\n", i, repetitions);
+        usleep(400000);
+    }
+
+    printf("✅ Boucle simple terminée!\n");
+}
+
+// Fonction pour les palettes créatives
+void handle_palette(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.palette - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    // Parser les arguments: dessin, couleur
+    char *comma = strchr(start, ',');
+    if (!comma) {
+        maya_error("my.palette nécessite deux arguments: dessin et couleur", 0);
+        return;
+    }
+
+    *comma = '\0';
+    char *dessin = start;
+    char *couleur = comma + 1;
+
+    trim(dessin);
+    trim(couleur);
+
+    // Enlever les guillemets
+    if (dessin[0] == '\'' && dessin[strlen(dessin)-1] == '\'') {
+        dessin[strlen(dessin)-1] = '\0';
+        dessin++;
+    }
+    if (couleur[0] == '\'' && couleur[strlen(couleur)-1] == '\'') {
+        couleur[strlen(couleur)-1] = '\0';
+        couleur++;
+    }
+
+    printf("🎨 PALETTE CRÉATIVE MAYA v6.0 🎨\n");
+    printf("Création: %s en %s\n", dessin, couleur);
+
+    // Appliquer la couleur
+    apply_color(couleur);
+
+    if (strcmp(dessin, "mouton") == 0) {
+        printf("    🐑\n");
+        printf("   (  o.o)\n");
+        printf("    > ^ <\n");
+        printf("   /_____\\\n");
+        printf("🐑 Mouton %s créé!\n", couleur);
+    }
+    else if (strcmp(dessin, "oiseau") == 0) {
+        printf("     🐦\n");
+        printf("    <(^v^)>\n");
+        printf("     /|\\\n");
+        printf("    /   \\\n");
+        printf("🐦 Oiseau %s créé!\n", couleur);
+    }
+    else if (strcmp(dessin, "abeille") == 0) {
+        printf("     🐝\n");
+        printf("   .-\"\"\"-.  \n");
+        printf("  /       \\\n");
+        printf(" | o     o |\n");
+        printf("  \\   ∩   /\n");
+        printf("   '-...-'\n");
+        printf("🐝 Abeille %s créée!\n", couleur);
+    }
+    else if (strcmp(dessin, "dragon") == 0) {
+        printf("     🐉\n");
+        printf("    /~\\\n");
+        printf("   (  o.o )\n");
+        printf("    > ^ <\n");
+        printf("   /_____\\\n");
+        printf("🐉 Dragon %s créé!\n", couleur);
+    }
+    else {
+        printf("✨ Dessin personnalisé '%s' en %s\n", dessin, couleur);
+        printf("🎨 [Votre imagination prend forme!]\n");
+    }
+
+    reset_color();
+    printf("🌈 Création artistique terminée!\n");
+}
+
+// Fonction pour créer des jeux personnalisés
+void handle_owngame(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.owngame - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    // Enlever les guillemets
+    if (start[0] == '\'' && start[strlen(start)-1] == '\'') {
+        start[strlen(start)-1] = '\0';
+        start++;
+    }
+
+    printf("🎮 CRÉATEUR DE JEUX MAYA v6.0 🎮\n");
+    printf("Concept de jeu: %s\n", start);
+
+    printf("🔧 Génération du moteur de jeu...\n");
+    usleep(800000);
+    printf("🎨 Création des graphismes ASCII...\n");
+    usleep(600000);
+    printf("🎵 Composition de la bande sonore...\n");
+    usleep(500000);
+    printf("🎯 Programmation de la logique de jeu...\n");
+    usleep(700000);
+
+    printf("🌟 ===== VOTRE JEU PERSONNALISÉ ===== 🌟\n");
+    printf("Titre: %s\n", start);
+    printf("Genre: Aventure Maya Interactive\n");
+    printf("Joueurs: 1-∞\n");
+    printf("Difficulté: Ajustable\n");
+    printf("\n🎲 COMMANDES DU JEU:\n");
+    printf("   [W] - Avancer\n");
+    printf("   [S] - Reculer\n");
+    printf("   [A] - Gauche\n");
+    printf("   [D] - Droite\n");
+    printf("   [E] - Interagir\n");
+    printf("   [I] - Inventaire\n");
+    printf("   [Q] - Quitter\n");
+
+    printf("\n🏆 OBJECTIFS:\n");
+    printf("   - Explorez le monde de Maya\n");
+    printf("   - Résolvez les énigmes\n");
+    printf("   - Collectez les trésors\n");
+    printf("   - Devenez le maître du code!\n");
+
+    printf("\n✅ Jeu '%s' créé avec succès!\n", start);
+    printf("🎮 Prêt à jouer! Que l'aventure commence!\n");
+}
+
+// Fonction pour modifier la console dynamiquement
+void handle_modifie_console(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.modifie.console - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    // Parser les arguments: message_original, délai, message_modifié
+    char *comma1 = strchr(start, ',');
+    if (!comma1) {
+        maya_error("my.modifie.console nécessite trois arguments", 0);
+        return;
+    }
+
+    *comma1 = '\0';
+    char *message_original = start;
+    char *rest = comma1 + 1;
+
+    char *comma2 = strchr(rest, ',');
+    if (!comma2) {
+        maya_error("my.modifie.console nécessite trois arguments", 0);
+        return;
+    }
+
+    *comma2 = '\0';
+    char *delai_str = rest;
+    char *message_modifie = comma2 + 1;
+
+    trim(message_original);
+    trim(delai_str);
+    trim(message_modifie);
+
+    // Enlever les guillemets
+    if (message_original[0] == '\'' && message_original[strlen(message_original)-1] == '\'') {
+        message_original[strlen(message_original)-1] = '\0';
+        message_original++;
+    }
+    if (message_modifie[0] == '\'' && message_modifie[strlen(message_modifie)-1] == '\'') {
+        message_modifie[strlen(message_modifie)-1] = '\0';
+        message_modifie++;
+    }
+
+    int delai = evaluate_expression_numeric(delai_str);
+
+    printf("💬 MODIFICATION CONSOLE MAYA v6.0 💬\n");
+    printf("%s", message_original);
+    fflush(stdout);
+
+    // Attendre le délai
+    usleep(delai * 1000);
+
+    // Effacer la ligne précédente et afficher le nouveau message
+    printf("\r\033[K%s\n", message_modifie);
+    printf("✅ Modification console terminée!\n");
+}
+
+// Fonction pour créer des menus interactifs
+void handle_interactive(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.interactive - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    // Enlever les guillemets
+    if (start[0] == '\'' && start[strlen(start)-1] == '\'') {
+        start[strlen(start)-1] = '\0';
+        start++;
+    }
+
+    printf("📋 MENU INTERACTIF MAYA v6.0 📋\n");
+    printf("╔══════════════════════════════════════╗\n");
+    printf("║            %s            ║\n", start);
+    printf("╠══════════════════════════════════════╣\n");
+    printf("║  [1] 🎮 Jouer                        ║\n");
+    printf("║  [2] ⚙️  Options                     ║\n");
+    printf("║  [3] 📊 Statistiques                 ║\n");
+    printf("║  [4] 🎨 Personnalisation             ║\n");
+    printf("║  [5] 💾 Sauvegarder                  ║\n");
+    printf("║  [6] 📚 Aide                         ║\n");
+    printf("║  [7] 🚪 Quitter                      ║\n");
+    printf("╚══════════════════════════════════════╝\n");
+    printf("👆 Choisissez une option (1-7): ");
+
+    char choice[10];
+    if (fgets(choice, sizeof(choice), stdin)) {
+        int option = atoi(choice);
+        switch(option) {
+            case 1:
+                printf("🎮 Lancement du jeu...\n");
+                break;
+            case 2:
+                printf("⚙️ Menu des options ouvert\n");
+                break;
+            case 3:
+                printf("📊 Affichage des statistiques\n");
+                break;
+            case 4:
+                printf("🎨 Menu de personnalisation\n");
+                break;
+            case 5:
+                printf("💾 Sauvegarde en cours...\n");
+                break;
+            case 6:
+                printf("📚 Aide Maya v6.0 affichée\n");
+                break;
+            case 7:
+                printf("🚪 Merci d'avoir utilisé Maya!\n");
+                break;
+            default:
+                printf("❌ Option invalide\n");
+        }
+    }
+    printf("✅ Menu interactif terminé!\n");
+}
+
+// Système d'inventaire dynamique avec gestion complexe
+typedef struct {
+    char nom[50];
+    char type[30];
+    char description[100];
+    int quantite;
+    int actif;
+} InventaireItem;
+
+static InventaireItem inventaire_maya[50];
+static int inventaire_count = 0;
+
+void handle_inventaire(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        // Si pas de parenthèses, c'est un affichage simple
+        printf("🎒 INVENTAIRE MAYA v6.0 🎒\n");
+        printf("════════════════════════════════════\n");
+        
+        if (inventaire_count == 0) {
+            printf("Inventaire vide\n");
+        } else {
+            for (int i = 0; i < inventaire_count; i++) {
+                if (inventaire_maya[i].actif) {
+                    printf("[%d] %s (%s) x%d\n", i+1, 
+                           inventaire_maya[i].nom,
+                           inventaire_maya[i].type,
+                           inventaire_maya[i].quantite);
+                    printf("    Description: %s\n", inventaire_maya[i].description);
+                }
+            }
+        }
+        printf("════════════════════════════════════\n");
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    // Parser les arguments
+    char *args[4];
+    int arg_count = 0;
+    char *token = strtok(start, ",");
+    
+    while (token != NULL && arg_count < 4) {
+        trim(token);
+        if (token[0] == '\'' && token[strlen(token)-1] == '\'') {
+            token[strlen(token)-1] = '\0';
+            token++;
+        }
+        args[arg_count] = strdup(token);
+        arg_count++;
+        token = strtok(NULL, ",");
+    }
+
+    if (arg_count < 2) {
+        maya_error("my.inventaire nécessite au moins action et nom", 0);
+        return;
+    }
+
+    char *action = args[0];
+    char *nom = args[1];
+
+    printf("🎒 INVENTAIRE MAYA v6.0 - %s 🎒\n", action);
+
+    if (strcmp(action, "ajouter") == 0) {
+        if (arg_count < 4) {
+            maya_error("ajouter nécessite: nom, type, description", 0);
+            return;
+        }
+
+        char *type = args[2];
+        char *description = args[3];
+
+        if (inventaire_count < 50) {
+            strcpy(inventaire_maya[inventaire_count].nom, nom);
+            strcpy(inventaire_maya[inventaire_count].type, type);
+            strcpy(inventaire_maya[inventaire_count].description, description);
+            inventaire_maya[inventaire_count].quantite = 1;
+            inventaire_maya[inventaire_count].actif = 1;
+            inventaire_count++;
+
+            printf("✅ %s ajouté à l'inventaire!\n", nom);
+            printf("Type: %s\n", type);
+            printf("Description: %s\n", description);
+        } else {
+            printf("❌ Inventaire plein!\n");
+        }
+    }
+    else if (strcmp(action, "utiliser") == 0) {
+        int trouve = 0;
+        for (int i = 0; i < inventaire_count; i++) {
+            if (inventaire_maya[i].actif && strcmp(inventaire_maya[i].nom, nom) == 0) {
+                printf("⚡ Utilisation de: %s\n", nom);
+                printf("📝 %s\n", inventaire_maya[i].description);
+                
+                inventaire_maya[i].quantite--;
+                if (inventaire_maya[i].quantite <= 0) {
+                    inventaire_maya[i].actif = 0;
+                    printf("💨 %s consommé et retiré de l'inventaire\n", nom);
+                } else {
+                    printf("📦 Quantité restante: %d\n", inventaire_maya[i].quantite);
+                }
+                trouve = 1;
+                break;
+            }
+        }
+        if (!trouve) {
+            printf("❌ %s non trouvé dans l'inventaire\n", nom);
+        }
+    }
+    else if (strcmp(action, "supprimer") == 0) {
+        int trouve = 0;
+        for (int i = 0; i < inventaire_count; i++) {
+            if (inventaire_maya[i].actif && strcmp(inventaire_maya[i].nom, nom) == 0) {
+                inventaire_maya[i].actif = 0;
+                printf("🗑️ %s supprimé de l'inventaire\n", nom);
+                trouve = 1;
+                break;
+            }
+        }
+        if (!trouve) {
+            printf("❌ %s non trouvé dans l'inventaire\n", nom);
+        }
+    }
+    else {
+        printf("❌ Action non reconnue: %s\n", action);
+        printf("Actions disponibles: ajouter, utiliser, supprimer\n");
+    }
+
+    // Libérer la mémoire
+    for (int i = 0; i < arg_count; i++) {
+        free(args[i]);
+    }
+}
+
+// Fonction pour les récits d'histoires
+void handle_histoire_recit(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.histoire.recit - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    // Enlever les guillemets
+    if (start[0] == '\'' && start[strlen(start)-1] == '\'') {
+        start[strlen(start)-1] = '\0';
+        start++;
+    }
+
+    printf("📖 RÉCIT MAYA v6.0 📖\n");
+    printf("\033[95m"); // Couleur rose pour les histoires
+    printf("════════════════════════════════════════════════════════════════\n");
+    printf("                          📚 HISTOIRE 📚\n");
+    printf("════════════════════════════════════════════════════════════════\n");
+    printf("\n");
+    
+    // Affichage avec effet de machine à écrire
+    for (size_t i = 0; i < strlen(start); i++) {
+        printf("%c", start[i]);
+        fflush(stdout);
+        usleep(50000); // 50ms entre chaque caractère
+    }
+    
+    printf("\n\n");
+    printf("════════════════════════════════════════════════════════════════\n");
+    printf("\033[0m"); // Reset couleur
+    printf("✨ Histoire racontée avec la magie de Maya!\n");
+}
+
+// Fonction pour les fins d'histoires
+void handle_histoire_end(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.histoire.end - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    // Enlever les guillemets
+    if (start[0] == '\'' && start[strlen(start)-1] == '\'') {
+        start[strlen(start)-1] = '\0';
+        start++;
+    }
+
+    printf("🎬 FIN DE L'HISTOIRE MAYA v6.0 🎬\n");
+    printf("\033[31m"); // Couleur rouge pour la fin
+    printf("╔══════════════════════════════════════════════════════════════╗\n");
+    printf("║                        🎭 ÉPILOGUE 🎭                        ║\n");
+    printf("╠══════════════════════════════════════════════════════════════╣\n");
+    printf("║                                                              ║\n");
+    
+    // Centrer le texte
+    int text_len = strlen(start);
+    int padding = (62 - text_len) / 2;
+    printf("║");
+    for (int i = 0; i < padding; i++) printf(" ");
+    printf("%s", start);
+    for (int i = 0; i < (62 - text_len - padding); i++) printf(" ");
+    printf("║\n");
+    
+    printf("║                                                              ║\n");
+    printf("╚══════════════════════════════════════════════════════════════╝\n");
+    printf("\033[0m"); // Reset couleur
+    
+    printf("\n🌟 THE END 🌟\n");
+    printf("👏 Bravo! Histoire terminée avec panache!\n");
+    printf("📚 Merci d'avoir utilisé le conteur Maya v6.0!\n");
+}
+
+// Fonction pour créer des animaux personnalisés
+void handle_own_pet(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.own.pet - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    // Enlever les guillemets
+    if (start[0] == '\'' && start[strlen(start)-1] == '\'') {
+        start[strlen(start)-1] = '\0';
+        start++;
+    }
+
+    printf("🐾 CRÉATION D'ANIMAL PERSONNALISÉ MAYA v6.0 🐾\n");
+    printf("Histoire de l'animal: %s\n", start);
+
+    printf("🧬 Génération de l'ADN unique...\n");
+    usleep(800000);
+    printf("🎨 Création de l'apparence...\n");
+    usleep(600000);
+    printf("🧠 Développement de la personnalité...\n");
+    usleep(500000);
+    printf("⚡ Insufflation de la vie...\n");
+    usleep(700000);
+
+    // Générer des caractéristiques aléatoires
+    srand(time(NULL));
+    char *couleurs[] = {"Doré", "Argenté", "Cristallin", "Arc-en-ciel", "Étoilé", "Mystique"};
+    char *tailles[] = {"Minuscule", "Petit", "Moyen", "Grand", "Gigantesque", "Légendaire"};
+    char *pouvoirs[] = {"Télépathie", "Vol", "Invisibilité", "Téléportation", "Magie", "Sagesse infinie"};
+
+    int couleur_idx = rand() % 6;
+    int taille_idx = rand() % 6;
+    int pouvoir_idx = rand() % 6;
+
+    printf("✨ VOTRE ANIMAL PERSONNALISÉ EST NÉ! ✨\n");
+    printf("═══════════════════════════════════════\n");
+    printf("🏷️  Histoire: %s\n", start);
+    printf("🌈 Couleur: %s\n", couleurs[couleur_idx]);
+    printf("📏 Taille: %s\n", tailles[taille_idx]);
+    printf("⚡ Pouvoir: %s\n", pouvoirs[pouvoir_idx]);
+    printf("❤️  Niveau d'affection: ∞\n");
+    printf("🍃 Habitat: Monde de Maya\n");
+    printf("🎵 Cri: *Sons magiques indescriptibles*\n");
+    printf("═══════════════════════════════════════\n");
+    printf("🐾 Votre compagnon Maya est prêt à vous accompagner dans vos aventures!\n");
+}
+
+// Fonction pour créer des titans personnalisés
+void handle_own_titan(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.own.titan - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    // Enlever les guillemets
+    if (start[0] == '\'' && start[strlen(start)-1] == '\'') {
+        start[strlen(start)-1] = '\0';
+        start++;
+    }
+
+    printf("⚡ CRÉATION DE TITAN LÉGENDAIRE MAYA v6.0 ⚡\n");
+    printf("Légende du titan: %s\n", start);
+
+    printf("🌋 Éveil des forces primordiales...\n");
+    usleep(1000000);
+    printf("⚡ Forge du corps titanesque...\n");
+    usleep(800000);
+    printf("🔥 Allumage de l'âme immortelle...\n");
+    usleep(600000);
+    printf("👑 Couronnement du pouvoir ultime...\n");
+    usleep(900000);
+
+    // Générer des caractéristiques épiques
+    srand(time(NULL));
+    char *elements[] = {"Foudre", "Lave", "Glace Éternelle", "Vent Cosmique", "Terre Sacrée", "Lumière Pure"};
+    char *armes[] = {"Épée Dimensionnelle", "Marteau des Mondes", "Arc Stellaire", "Bâton du Temps", "Griffes d'Éternité", "Livre des Sorts"};
+    char *domaines[] = {"Montagnes Flottantes", "Océan de Magma", "Forêt Cristalline", "Désert de Sable d'Or", "Ville des Nuages", "Royaume des Codes"};
+
+    int element_idx = rand() % 6;
+    int arme_idx = rand() % 6;
+    int domaine_idx = rand() % 6;
+    int puissance = 9000 + rand() % 1000;
+
+    printf("👑 VOTRE TITAN LÉGENDAIRE S'ÉLÈVE! 👑\n");
+    printf("═══════════════════════════════════════════════════\n");
+    printf("📜 Légende: %s\n", start);
+    printf("🌟 Élément: %s\n", elements[element_idx]);
+    printf("⚔️  Arme: %s\n", armes[arme_idx]);
+    printf("🏰 Domaine: %s\n", domaines[domaine_idx]);
+    printf("💪 Niveau de puissance: %d\n", puissance);
+    printf("⏳ Âge: Depuis l'aube des temps\n");
+    printf("🎯 Mission: Protéger l'univers Maya\n");
+    printf("💀 Ennemis vaincus: Innombrables\n");
+    printf("═══════════════════════════════════════════════════\n");
+    printf("⚡ Le titan %s domine désormais l'univers Maya!\n", start);
+}
+
+// Fonction pour générer des statistiques d'animaux
+void handle_nombre_pet(char *line) {
+    (void)line; // Pas de paramètres
+
+    printf("🐾 GÉNÉRATEUR DE STATS D'ANIMAUX MAYA v6.0 🐾\n");
+
+    srand(time(NULL));
+    
+    // Générer des statistiques d'animal
+    int vie = 50 + rand() % 150;
+    int force = 20 + rand() % 80;
+    int vitesse = 30 + rand() % 70;
+    int intelligence = 40 + rand() % 60;
+    int magie = 10 + rand() % 90;
+    int loyaute = 70 + rand() % 30;
+
+    printf("📊 STATISTIQUES GÉNÉRÉES:\n");
+    printf("════════════════════════════\n");
+    printf("❤️  Points de Vie: %d\n", vie);
+    printf("💪 Force: %d\n", force);
+    printf("💨 Vitesse: %d\n", vitesse);
+    printf("🧠 Intelligence: %d\n", intelligence);
+    printf("✨ Pouvoir Magique: %d\n", magie);
+    printf("💖 Loyauté: %d\n", loyaute);
+    printf("════════════════════════════\n");
+    
+    // Calcul du score total
+    int total = vie + force + vitesse + intelligence + magie + loyaute;
+    printf("🏆 Score Total: %d points\n", total);
+    
+    if (total > 400) {
+        printf("⭐ RANG: Légendaire!\n");
+    } else if (total > 300) {
+        printf("🌟 RANG: Épique!\n");
+    } else if (total > 200) {
+        printf("✨ RANG: Rare!\n");
+    } else {
+        printf("💫 RANG: Commun\n");
+    }
+    
+    printf("🎯 Animal généré avec succès!\n");
+}
+
+// Fonction pour générer des statistiques de titans
+void handle_nombre_titan(char *line) {
+    (void)line; // Pas de paramètres
+
+    printf("⚡ GÉNÉRATEUR DE STATS DE TITANS MAYA v6.0 ⚡\n");
+
+    srand(time(NULL));
+    
+    // Générer des statistiques épiques
+    int puissance = 5000 + rand() % 5000;
+    int defense = 3000 + rand() % 4000;
+    int vitesse = 1000 + rand() % 3000;
+    int magie = 4000 + rand() % 6000;
+    int sagesse = 2000 + rand() % 8000;
+    int destruction = 6000 + rand() % 4000;
+
+    printf("📊 STATISTIQUES TITANESQUES:\n");
+    printf("════════════════════════════════════\n");
+    printf("💥 Puissance Destructrice: %d\n", puissance);
+    printf("🛡️  Défense Absolue: %d\n", defense);
+    printf("⚡ Vitesse Cosmique: %d\n", vitesse);
+    printf("🌟 Magie Primordiale: %d\n", magie);
+    printf("📚 Sagesse Éternelle: %d\n", sagesse);
+    printf("💀 Capacité de Destruction: %d\n", destruction);
+    printf("════════════════════════════════════\n");
+    
+    // Calcul du score épique
+    int total = (puissance + defense + vitesse + magie + sagesse + destruction) / 100;
+    printf("👑 Score Titanesque: %d points\n", total);
+    
+    if (total > 250) {
+        printf("🌌 CLASSE: Titan Universel!\n");
+        printf("🎯 Capable de créer et détruire des galaxies!\n");
+    } else if (total > 200) {
+        printf("🔥 CLASSE: Titan Légendaire!\n");
+        printf("🎯 Maître de plusieurs dimensions!\n");
+    } else if (total > 150) {
+        printf("⚡ CLASSE: Titan Épique!\n");
+        printf("🎯 Gardien de mondes entiers!\n");
+    } else {
+        printf("💪 CLASSE: Titan Guerrier!\n");
+        printf("🎯 Protecteur de civilisations!\n");
+    }
+    
+    printf("👑 Titan généré avec une puissance divine!\n");
+}
+
 void handle_exercice_gest_pgi(char *line) {
     (void)line; // Marquer le paramètre comme volontairement inutilisé
 
@@ -3531,6 +4423,52 @@ void interpret_line(char *line) {
     else if (strstr(line, "my.exercice.create")) {
         handle_exercice_create(line);
     }
+    // Nouvelles fonctionnalités v6.0
+    else if (strstr(line, "my.create.robot")) {
+        handle_create_robot(line);
+    }
+    else if (strstr(line, "my.for")) {
+        handle_for_loop(line);
+    }
+    else if (strstr(line, "my.while")) {
+        handle_while_loop(line);
+    }
+    else if (strstr(line, "my.loop")) {
+        handle_loop(line);
+    }
+    else if (strstr(line, "my.palette")) {
+        handle_palette(line);
+    }
+    else if (strstr(line, "my.owngame")) {
+        handle_owngame(line);
+    }
+    else if (strstr(line, "my.modifie.console")) {
+        handle_modifie_console(line);
+    }
+    else if (strstr(line, "my.interactive")) {
+        handle_interactive(line);
+    }
+    else if (strstr(line, "my.inventaire")) {
+        handle_inventaire(line);
+    }
+    else if (strstr(line, "my.histoire.recit")) {
+        handle_histoire_recit(line);
+    }
+    else if (strstr(line, "my.histoire.end")) {
+        handle_histoire_end(line);
+    }
+    else if (strstr(line, "my.own.pet")) {
+        handle_own_pet(line);
+    }
+    else if (strstr(line, "my.own.titan")) {
+        handle_own_titan(line);
+    }
+    else if (strstr(line, "my.nombre.pet")) {
+        handle_nombre_pet(line);
+    }
+    else if (strstr(line, "my.nombre.titan")) {
+        handle_nombre_titan(line);
+    }
     else if (strstr(line, "my.fonction")) {
         handle_fonction(line);
     }
@@ -3689,19 +4627,29 @@ int main(int argc, char *argv[]) {
     }
 
     // Mode interactif si aucun fichier n'est fourni
-    printf("🌸 === Interpréteur Maya v5.0 === 🌸\n");
-    printf("🆕 NOUVELLES FONCTIONNALITÉS v5.0:\n");
+    printf("🌸 === Interpréteur Maya v6.0 - L'IMAGINATION SANS LIMITES === 🌸\n");
+    printf("🆕 NOUVELLES FONCTIONNALITÉS v6.0:\n");
+    printf("🤖 Chatbots: my.create.robot (créez vos assistants IA!)\n");
+    printf("🔄 Boucles: my.for, my.while, my.loop (contrôle de flux complet!)\n");
+    printf("🎨 Palettes: my.palette (dessins colorés personnalisés!)\n");
+    printf("🎮 Jeux: my.owngame (créateur de jeux interactifs!)\n");
+    printf("💬 Console: my.modifie.console (modifications dynamiques!)\n");
+    printf("📋 Menus: my.interactive (interfaces utilisateur ASCII!)\n");
+    printf("🎒 Inventaire: my.inventaire (système de gestion d'objets!)\n");
+    printf("📖 Histoires: my.histoire.recit, my.histoire.end (conteur magique!)\n");
+    printf("🐾 Animaux: my.own.pet, my.nombre.pet (créatures personnalisées!)\n");
+    printf("⚡ Titans: my.own.titan, my.nombre.titan (épopées légendaires!)\n");
     printf("🧮 Maths avancées: médiane, moyenne, cube, carré, racine, degrés\n");
     printf("📐 Théorèmes: Pythagore (my.pytha), Thalès (my.thales)\n");
     printf("🎵 Musique: my.rythme.convertir, my.renvoie.gamme, my.obtenir.gamme\n");
     printf("🗄️ Bases de données: my.db, my.send.db, my.supp.db, my.util.db\n");
     printf("⚡ Code C intégré: my.execute.c (exécutez du C directement!)\n");
-    printf("🌌 Nouvelles simulations: Robot, Quantique, Univers, Atomes, Voyage temporel\n");
+    printf("🌌 Simulations: Robot, Quantique, Univers, Atomes, Voyage temporel\n");
     printf("🧚‍♀️ Contes: Fées, Vampires, Sirènes, Monstres\n");
     printf("📚 Exercices BAC: Gestion, Math, Histoire, Management (STMG/Général)\n");
     printf("🎮 Mini-jeux: Quizz, Dés, Puissance4, Pendu, Memory, Snake, TicTac et plus!\n");
     printf("📦 Packages C améliorés: Plus simples à créer et charger!\n");
-    printf("🚀 Maya v5.0 - Le plus créatif des langages! 🚀\n");
+    printf("🚀 Maya v6.0 - OÙ L'IMAGINATION DEVIENT RÉALITÉ! 🚀\n");
     printf("Mode interactif - Tapez 'exit' pour quitter\n\n");
 
     char line[MAX_LINE_LENGTH];
