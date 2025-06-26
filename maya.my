@@ -1,4 +1,42 @@
-my.math.add(5 + 3) # renvoie 8
-my.math.sub(6 - 3) # renvoie 3
-my.math.div(10 / 2) # renvoie 5
-my.math.mult(5 * 2) #renvoie 10
+
+# Test des conditions Maya
+
+my.console('=== Test des conditions Maya ===')
+
+# Test 1: Variables et conditions simples
+my.variable age = 16
+my.console('Test avec age = 16')
+
+my.if(age < 18)
+my.alors {
+    my.console('Vous êtes mineur!')
+}
+my.autre {
+    my.console('Vous êtes majeur!')
+}
+
+# Test 2: Autre condition
+my.variable temperature = 25
+my.console('Test avec temperature = 25')
+
+my.if(temperature > 30)
+my.alors {
+    my.console('Il fait chaud!')
+}
+my.autre {
+    my.console('Temperature normale')
+}
+
+# Test 3: Variable booléenne
+my.variable pluie = 0
+my.console('Test avec pluie = false (0)')
+
+my.if(pluie)
+my.alors {
+    my.console('Il pleut!')
+}
+my.autre {
+    my.console('Pas de pluie!')
+}
+
+my.console('=== Fin des tests ===')

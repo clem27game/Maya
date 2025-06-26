@@ -77,3 +77,7 @@ my.math.add(nombre1 + nombre2)
 
 my.console('🎉 Tests terminés! Maya v2.0 fonctionne parfaitement! 🎉')
 my.random.txt('Option1', 'Option2', 'Option3')
+my.math.add(5 + 3) # renvoie 8
+my.math.sub(6 - 3) # renvoie 3
+my.math.div(10 / 2) # renvoie 5
+my.math.mult(5 * 2) #renvoie 10
