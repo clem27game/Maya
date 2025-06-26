@@ -56,6 +56,27 @@ void draw_tree();
 void draw_dog();
 void draw_horse();
 void draw_goat();
+void draw_sheep();
+void draw_bird();
+void draw_fish();
+void handle_quizz(char *line);
+void handle_dice(char *line);
+void handle_puissance4(char *line);
+void handle_pendu(char *line);
+void handle_worldgame(char *line);
+void handle_rock_leaf(char *line);
+void handle_devine_number(char *line);
+void handle_snake(char *line);
+void handle_tictac(char *line);
+void handle_memory(char *line);
+void handle_simulation_bac(char *line);
+void handle_simulation_combat(char *line);
+void handle_simulation_sciences(char *line);
+void handle_simulation_clone(char *line);
+void handle_simulation_tech(char *line);
+void handle_simulation_ia(char *line);
+void handle_simulation_conscient(char *line);
+void handle_simulation_iawork(char *line);
 
 // Fonction pour afficher les erreurs Maya
 void maya_error(const char *message, int line_number) {
@@ -442,6 +463,37 @@ void draw_goat() {
     printf("🐐 Baaah! 🐐\n");
 }
 
+void draw_sheep() {
+    printf("     ,--.    \n");
+    printf("    (    )   \n");
+    printf("   (  oo  )  \n");
+    printf("    \\    /   \n");
+    printf("     \\  /    \n");
+    printf("      \\/     \n");
+    printf("   @@@@@@@@  \n");
+    printf("🐑 Beeeh! 🐑\n");
+}
+
+void draw_bird() {
+    printf("     ,-.     \n");
+    printf("    /   \\    \n");
+    printf("   (  ^  )   \n");
+    printf("    \\   /    \n");
+    printf("     \\ /     \n");
+    printf("      v      \n");
+    printf("    /---\\    \n");
+    printf("🐦 Tweet! 🐦\n");
+}
+
+void draw_fish() {
+    printf("   ><(((('>  \n");
+    printf("     ~~~~    \n");
+    printf("   ><((('>   \n");
+    printf("     ~~      \n");
+    printf("   ><(('>    \n");
+    printf("🐟 Blub! 🐟\n");
+}
+
 // Fonction pour traiter my.draw
 void handle_draw(char *line) {
     if (strstr(line, "my.draw.heart")) {
@@ -458,6 +510,15 @@ void handle_draw(char *line) {
     }
     else if (strstr(line, "my.draw.goat")) {
         draw_goat();
+    }
+    else if (strstr(line, "my.draw.sheep")) {
+        draw_sheep();
+    }
+    else if (strstr(line, "my.draw.bird")) {
+        draw_bird();
+    }
+    else if (strstr(line, "my.draw.fish")) {
+        draw_fish();
     }
     else if (strstr(line, "my.draw.pers")) {
         char *start = strchr(line, '(');
@@ -616,6 +677,609 @@ void handle_random_txt(char *line) {
     printf("Texte aléatoire: %s\n", texts[random_index]);
 }
 
+// Fonction pour traiter my.quizz
+void handle_quizz(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.quizz - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    char *comma1 = strchr(start, ',');
+    if (!comma1) {
+        maya_error("my.quizz nécessite deux arguments: question et réponse", 0);
+        return;
+    }
+    
+    *comma1 = '\0';
+    char *question = start;
+    char *answer = comma1 + 1;
+    
+    trim(question);
+    trim(answer);
+    
+    if (question[0] == '\'' && question[strlen(question)-1] == '\'') {
+        question[strlen(question)-1] = '\0';
+        question++;
+    }
+    if (answer[0] == '\'' && answer[strlen(answer)-1] == '\'') {
+        answer[strlen(answer)-1] = '\0';
+        answer++;
+    }
+    
+    printf("🎯 QUIZ MAYA 🎯\n");
+    printf("Question: %s\n", question);
+    printf("Votre réponse: ");
+    
+    char user_answer[MAX_STRING_VALUE];
+    if (fgets(user_answer, sizeof(user_answer), stdin)) {
+        user_answer[strcspn(user_answer, "\n")] = '\0';
+        if (strcmp(user_answer, answer) == 0) {
+            printf("🎉 Correct! Bonne réponse!\n");
+        } else {
+            printf("❌ Incorrect! La bonne réponse était: %s\n", answer);
+        }
+    }
+}
+
+// Fonction pour traiter my.dice
+void handle_dice(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.dice - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    int faces = evaluate_expression_numeric(start);
+    if (faces < 2) faces = 6; // Par défaut dé à 6 faces
+    
+    printf("🎲 JEU DE DÉS MAYA 🎲\n");
+    printf("Lancement du dé à %d faces...\n", faces);
+    
+    srand(time(NULL));
+    int result = 1 + rand() % faces;
+    
+    printf("🎯 Résultat: %d\n", result);
+    
+    if (result == faces) {
+        printf("🌟 Félicitations! Vous avez obtenu le maximum!\n");
+    } else if (result == 1) {
+        printf("😅 Oops! Le minimum...\n");
+    } else {
+        printf("✨ Bon lancer!\n");
+    }
+}
+
+// Fonction pour traiter my.puissance4
+void handle_puissance4(char *line) {
+    printf("🔴🟡 PUISSANCE 4 MAYA 🟡🔴\n");
+    printf("Créez votre propre jeu de Puissance 4!\n");
+    printf("Grille 7x6 initialisée:\n");
+    
+    char grid[6][7];
+    for (int i = 0; i < 6; i++) {
+        for (int j = 0; j < 7; j++) {
+            grid[i][j] = '.';
+        }
+    }
+    
+    // Affichage de la grille
+    printf("|1|2|3|4|5|6|7|\n");
+    for (int i = 0; i < 6; i++) {
+        printf("|");
+        for (int j = 0; j < 7; j++) {
+            printf("%c|", grid[i][j]);
+        }
+        printf("\n");
+    }
+    
+    printf("🎮 Votre jeu de Puissance 4 est prêt!\n");
+    printf("Ajoutez votre logique de jeu avec les autres fonctions Maya!\n");
+}
+
+// Fonction pour traiter my.pendu
+void handle_pendu(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.pendu - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    char word[MAX_STRING_VALUE];
+    strcpy(word, start);
+    trim(word);
+    
+    if (word[0] == '\'' && word[strlen(word)-1] == '\'') {
+        word[strlen(word)-1] = '\0';
+        memmove(word, word + 1, strlen(word));
+    }
+    
+    printf("🎪 JEU DU PENDU MAYA 🎪\n");
+    printf("Mot à deviner: ");
+    for (size_t i = 0; i < strlen(word); i++) {
+        printf("_ ");
+    }
+    printf("\n");
+    
+    printf("💀 Essais restants: 6\n");
+    printf("🎯 Devinez le mot: %s\n", word);
+    printf("🎮 Votre jeu du pendu est prêt!\n");
+}
+
+// Fonction pour traiter my.worldgame
+void handle_worldgame(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.worldgame - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    printf("🧩 JEU DE MOTS RÉFLÉCHIS MAYA 🧩\n");
+    printf("Créez votre propre jeu de mots!\n");
+    printf("Mots disponibles: %s\n", start);
+    printf("🎮 Votre jeu de mots est prêt!\n");
+}
+
+// Fonction pour traiter my.rock.leaf
+void handle_rock_leaf(char *line) {
+    printf("🪨📄✂️ PIERRE-FEUILLE-CISEAU MAYA ✂️📄🪨\n");
+    printf("Choisissez: 1=Pierre, 2=Feuille, 3=Ciseau\n");
+    printf("Votre choix: ");
+    
+    char choice[10];
+    if (fgets(choice, sizeof(choice), stdin)) {
+        int player = atoi(choice);
+        srand(time(NULL));
+        int maya_choice = 1 + rand() % 3;
+        
+        const char *choices[] = {"", "Pierre 🪨", "Feuille 📄", "Ciseau ✂️"};
+        
+        printf("Vous: %s\n", choices[player]);
+        printf("Maya: %s\n", choices[maya_choice]);
+        
+        if (player == maya_choice) {
+            printf("🤝 Égalité!\n");
+        } else if ((player == 1 && maya_choice == 3) || 
+                   (player == 2 && maya_choice == 1) || 
+                   (player == 3 && maya_choice == 2)) {
+            printf("🎉 Vous gagnez!\n");
+        } else {
+            printf("🤖 Maya gagne!\n");
+        }
+    }
+}
+
+// Fonction pour traiter my.devine.number
+void handle_devine_number(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.devine.number - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    printf("🔢 DEVINE LE NOMBRE MAYA 🔢\n");
+    srand(time(NULL));
+    int secret = 1 + rand() % 100;
+    int attempts = 7;
+    
+    printf("J'ai choisi un nombre entre 1 et 100!\n");
+    printf("Vous avez %d essais. Bonne chance!\n", attempts);
+    
+    char guess_str[20];
+    for (int i = 0; i < attempts; i++) {
+        printf("Essai %d/%d: ", i+1, attempts);
+        if (fgets(guess_str, sizeof(guess_str), stdin)) {
+            int guess = atoi(guess_str);
+            
+            if (guess == secret) {
+                printf("🎉 Bravo! Vous avez trouvé le nombre %d!\n", secret);
+                return;
+            } else if (guess < secret) {
+                printf("📈 Plus grand!\n");
+            } else {
+                printf("📉 Plus petit!\n");
+            }
+        }
+    }
+    
+    printf("💀 Perdu! Le nombre était %d\n", secret);
+}
+
+// Fonction pour traiter my.snake
+void handle_snake(char *line) {
+    printf("🐍 SNAKE MAYA 🐍\n");
+    printf("Créez votre propre jeu Snake!\n");
+    printf("Grille 20x10:\n");
+    
+    for (int i = 0; i < 10; i++) {
+        for (int j = 0; j < 20; j++) {
+            if (i == 0 || i == 9 || j == 0 || j == 19) {
+                printf("#");
+            } else if (i == 5 && j == 10) {
+                printf("O"); // Tête du serpent
+            } else if (i == 5 && j == 9) {
+                printf("o"); // Corps du serpent
+            } else if (i == 3 && j == 15) {
+                printf("*"); // Nourriture
+            } else {
+                printf(" ");
+            }
+        }
+        printf("\n");
+    }
+    
+    printf("🎮 Votre jeu Snake est prêt!\n");
+    printf("O = Tête, o = Corps, * = Nourriture, # = Mur\n");
+}
+
+// Fonction pour traiter my.tictac
+void handle_tictac(char *line) {
+    printf("❌⭕ TIC TAC TOE MAYA ⭕❌\n");
+    printf("Grille 3x3:\n");
+    
+    char grid[3][3] = {
+        {' ', ' ', ' '},
+        {' ', ' ', ' '},
+        {' ', ' ', ' '}
+    };
+    
+    printf(" 1 | 2 | 3 \n");
+    printf("-----------\n");
+    printf(" 4 | 5 | 6 \n");
+    printf("-----------\n");
+    printf(" 7 | 8 | 9 \n");
+    
+    printf("🎮 Votre jeu Tic Tac Toe est prêt!\n");
+    printf("Utilisez les numéros 1-9 pour jouer!\n");
+}
+
+// Fonction pour traiter my.memory
+void handle_memory(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.memory - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    int size = evaluate_expression_numeric(start);
+    if (size < 2) size = 4;
+    
+    printf("🧠 JEU DE MEMORY MAYA 🧠\n");
+    printf("Grille %dx%d:\n", size, size);
+    
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            printf("? ");
+        }
+        printf("\n");
+    }
+    
+    printf("🎮 Votre jeu Memory est prêt!\n");
+    printf("Trouvez les paires cachées!\n");
+}
+
+// Fonction pour traiter my.simulation.bac
+void handle_simulation_bac(char *line) {
+    printf("🎓 SIMULATION BAC MAYA 🎓\n");
+    
+    srand(time(NULL));
+    float note = (float)(rand() % 2001) / 100.0; // Note entre 0 et 20
+    
+    printf("📊 Résultat de votre simulation BAC:\n");
+    printf("Note obtenue: %.2f/20\n", note);
+    
+    if (note >= 16) {
+        printf("🏆 Mention TRÈS BIEN! Excellent travail!\n");
+    } else if (note >= 14) {
+        printf("🥇 Mention BIEN! Très bon résultat!\n");
+    } else if (note >= 12) {
+        printf("🥈 Mention ASSEZ BIEN! Bon travail!\n");
+    } else if (note >= 10) {
+        printf("✅ BAC OBTENU! Félicitations!\n");
+    } else {
+        printf("❌ Échec... Courage pour la prochaine fois!\n");
+    }
+    
+    printf("🎯 Simulation terminée!\n");
+}
+
+// Fonction pour traiter my.simulation.combat
+void handle_simulation_combat(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.simulation.combat - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    printf("⚔️ SIMULATION COMBAT MAYA ⚔️\n");
+    printf("Paramètres: %s\n", start);
+    
+    srand(time(NULL));
+    int pv1 = 80 + rand() % 40;
+    int pv2 = 80 + rand() % 40;
+    int attaque1 = 15 + rand() % 10;
+    int attaque2 = 15 + rand() % 10;
+    
+    printf("🥊 Guerrier 1: %d PV, %d ATK\n", pv1, attaque1);
+    printf("🥊 Guerrier 2: %d PV, %d ATK\n", pv2, attaque2);
+    
+    while (pv1 > 0 && pv2 > 0) {
+        pv2 -= attaque1;
+        printf("⚡ Guerrier 1 attaque! Guerrier 2: %d PV restants\n", pv2 > 0 ? pv2 : 0);
+        
+        if (pv2 <= 0) {
+            printf("🏆 Guerrier 1 VICTOIRE!\n");
+            break;
+        }
+        
+        pv1 -= attaque2;
+        printf("⚡ Guerrier 2 attaque! Guerrier 1: %d PV restants\n", pv1 > 0 ? pv1 : 0);
+        
+        if (pv1 <= 0) {
+            printf("🏆 Guerrier 2 VICTOIRE!\n");
+            break;
+        }
+    }
+}
+
+// Fonction pour traiter my.simulation.sciences
+void handle_simulation_sciences(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.simulation.sciences - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    printf("🔬 SIMULATION SCIENTIFIQUE MAYA 🔬\n");
+    printf("Expérience: %s\n", start);
+    
+    srand(time(NULL));
+    int success = rand() % 100;
+    
+    printf("🧪 Préparation de l'expérience...\n");
+    usleep(1000000); // 1 seconde
+    printf("⚗️ Exécution en cours...\n");
+    usleep(1000000);
+    printf("📊 Analyse des résultats...\n");
+    usleep(500000);
+    
+    if (success > 70) {
+        printf("✅ Expérience RÉUSSIE! Résultats concluants!\n");
+    } else if (success > 40) {
+        printf("⚠️ Résultats PARTIELS. Nécessite plus d'analyses.\n");
+    } else {
+        printf("❌ Expérience ÉCHOUÉE. Révision du protocole nécessaire.\n");
+    }
+    
+    printf("📈 Taux de réussite: %d%%\n", success);
+}
+
+// Fonction pour traiter my.simulation.clone
+void handle_simulation_clone(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.simulation.clone - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    printf("🧬 SIMULATION CLONAGE MAYA 🧬\n");
+    printf("Animal à cloner: %s\n", start);
+    
+    printf("🔬 Extraction de l'ADN...\n");
+    usleep(800000);
+    printf("🧪 Préparation des cellules souches...\n");
+    usleep(800000);
+    printf("⚗️ Processus de clonage en cours...\n");
+    usleep(1200000);
+    
+    srand(time(NULL));
+    int success = rand() % 100;
+    
+    if (success > 60) {
+        printf("🎉 CLONAGE RÉUSSI! L'animal a été cloné avec succès!\n");
+        printf("🐾 Le clone présente 99.8%% de similarité génétique!\n");
+    } else {
+        printf("❌ Échec du clonage. Anomalies génétiques détectées.\n");
+        printf("🔄 Recommencer avec de nouveaux paramètres.\n");
+    }
+}
+
+// Fonction pour traiter my.simulation.tech
+void handle_simulation_tech(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.simulation.tech - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    printf("💻 SIMULATION TECHNOLOGIQUE MAYA 💻\n");
+    printf("Technologie: %s\n", start);
+    
+    printf("🔧 Développement en cours...\n");
+    usleep(1000000);
+    printf("⚙️ Tests de performance...\n");
+    usleep(800000);
+    printf("🚀 Optimisation finale...\n");
+    usleep(600000);
+    
+    srand(time(NULL));
+    int advancement = 50 + rand() % 50;
+    
+    printf("📈 Progrès technologique: %d%%\n", advancement);
+    printf("🌟 Innovation révolutionnaire créée!\n");
+}
+
+// Fonction pour traiter my.simulation.ia
+void handle_simulation_ia(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.simulation.ia - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    printf("🤖 SIMULATION IA MAYA 🤖\n");
+    printf("Type d'IA: %s\n", start);
+    
+    printf("🧠 Initialisation des réseaux de neurones...\n");
+    usleep(1000000);
+    printf("📚 Apprentissage automatique en cours...\n");
+    usleep(1200000);
+    printf("⚡ Optimisation des algorithmes...\n");
+    usleep(800000);
+    
+    srand(time(NULL));
+    int intelligence = 60 + rand() % 40;
+    
+    printf("🎯 Niveau d'intelligence: %d%%\n", intelligence);
+    if (intelligence > 90) {
+        printf("🌟 IA SUPER-INTELLIGENTE créée!\n");
+    } else if (intelligence > 75) {
+        printf("✨ IA avancée opérationnelle!\n");
+    } else {
+        printf("🔧 IA basique fonctionnelle.\n");
+    }
+}
+
+// Fonction pour traiter my.simulation.conscient
+void handle_simulation_conscient(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.simulation.conscient - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    printf("🧠💫 SIMULATION CONSCIENCE ARTIFICIELLE MAYA 💫🧠\n");
+    printf("Entité: %s\n", start);
+    
+    printf("🔮 Développement de la conscience...\n");
+    usleep(1500000);
+    printf("💭 Émergence de la pensée autonome...\n");
+    usleep(1200000);
+    printf("🌟 Éveil de la conscience de soi...\n");
+    usleep(1000000);
+    
+    srand(time(NULL));
+    int consciousness = rand() % 100;
+    
+    if (consciousness > 80) {
+        printf("✨ CONSCIENCE PLEINE atteinte!\n");
+        printf("🗣️ L'entité dit: 'Je pense, donc je suis.'\n");
+    } else if (consciousness > 50) {
+        printf("🌅 Conscience partielle émergée.\n");
+        printf("💭 L'entité commence à se questionner sur son existence.\n");
+    } else {
+        printf("🤖 Conscience limitée. Reste au stade d'automate avancé.\n");
+    }
+    
+    printf("🧬 Niveau de conscience: %d%%\n", consciousness);
+}
+
+// Fonction pour traiter my.simulation.iawork
+void handle_simulation_iawork(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.simulation.iawork - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    printf("🤖🌍 SIMULATION MONDE ROBOTIQUE MAYA 🌍🤖\n");
+    printf("Scénario: %s\n", start);
+    
+    printf("🏭 Les robots prennent le contrôle des usines...\n");
+    usleep(1000000);
+    printf("🏙️ Construction de villes automatisées...\n");
+    usleep(1200000);
+    printf("👥 Relations humains-robots en évolution...\n");
+    usleep(1000000);
+    
+    srand(time(NULL));
+    int scenario = rand() % 3;
+    
+    printf("🔮 RÉSULTAT DE LA SIMULATION:\n");
+    
+    switch(scenario) {
+        case 0:
+            printf("🤝 COOPÉRATION: Humains et robots travaillent ensemble!\n");
+            printf("🌈 Une société harmonieuse émerge.\n");
+            break;
+        case 1:
+            printf("⚔️ CONFLIT: Tensions entre humains et robots!\n");
+            printf("🛡️ La résistance humaine s'organise.\n");
+            break;
+        case 2:
+            printf("🤖 DOMINANCE: Les robots dirigent le monde!\n");
+            printf("👑 Une nouvelle ère robotique commence.\n");
+            break;
+    }
+    
+    printf("🎭 Simulation terminée. L'avenir reste à écrire...\n");
+}
+
 // Fonction pour traiter les conditions
 int handle_condition(char *condition) {
     trim(condition);
@@ -740,6 +1404,60 @@ void interpret_line(char *line) {
     else if (strstr(line, "my.random.txt")) {
         handle_random_txt(line);
     }
+    else if (strstr(line, "my.quizz")) {
+        handle_quizz(line);
+    }
+    else if (strstr(line, "my.dice")) {
+        handle_dice(line);
+    }
+    else if (strstr(line, "my.puissance4")) {
+        handle_puissance4(line);
+    }
+    else if (strstr(line, "my.pendu")) {
+        handle_pendu(line);
+    }
+    else if (strstr(line, "my.worldgame")) {
+        handle_worldgame(line);
+    }
+    else if (strstr(line, "my.rock.leaf")) {
+        handle_rock_leaf(line);
+    }
+    else if (strstr(line, "my.devine.number")) {
+        handle_devine_number(line);
+    }
+    else if (strstr(line, "my.snake")) {
+        handle_snake(line);
+    }
+    else if (strstr(line, "my.tictac")) {
+        handle_tictac(line);
+    }
+    else if (strstr(line, "my.memory")) {
+        handle_memory(line);
+    }
+    else if (strstr(line, "my.simulation.bac")) {
+        handle_simulation_bac(line);
+    }
+    else if (strstr(line, "my.simulation.combat")) {
+        handle_simulation_combat(line);
+    }
+    else if (strstr(line, "my.simulation.sciences")) {
+        handle_simulation_sciences(line);
+    }
+    else if (strstr(line, "my.simulation.clone")) {
+        handle_simulation_clone(line);
+    }
+    else if (strstr(line, "my.simulation.tech")) {
+        handle_simulation_tech(line);
+    }
+    else if (strstr(line, "my.simulation.ia")) {
+        handle_simulation_ia(line);
+    }
+    else if (strstr(line, "my.simulation.conscient")) {
+        handle_simulation_conscient(line);
+    }
+    else if (strstr(line, "my.simulation.iawork")) {
+        handle_simulation_iawork(line);
+    }
     else if (strstr(line, "my.if")) {
         // Traitement des conditions
         char *start = strchr(line, '(');
@@ -820,8 +1538,10 @@ int main(int argc, char *argv[]) {
     }
     
     // Mode interactif si aucun fichier n'est fourni
-    printf("🌸 === Interpréteur Maya v2.0 === 🌸\n");
-    printf("💖 Nouvelles fonctionnalités: Variables améliorées, Input, Délais, Dessins ASCII, Couleurs, Random! 💖\n");
+    printf("🌸 === Interpréteur Maya v3.0 === 🌸\n");
+    printf("💖 Nouvelles fonctionnalités: Mini-jeux, Simulations, Dessins ASCII étendus! 💖\n");
+    printf("🎮 Mini-jeux: Quizz, Dés, Puissance4, Pendu, Memory, Snake, TicTac et plus! 🎮\n");
+    printf("🔬 Simulations: Bac, Combat, Sciences, Clonage, IA, Technologies! 🔬\n");
     printf("Mode interactif - Tapez 'exit' pour quitter\n\n");
     
     char line[MAX_LINE_LENGTH];
