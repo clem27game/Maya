@@ -2028,8 +2028,111 @@ void handle_rythme_convertir(char *line) {
     *end = '\0';
 
     printf("🎵 CONVERTISSEUR RYTHMIQUE MAYA 🎵\n");
-    printf("Conversion: %s\n", start);
-    printf("4/4 → 3/4: Tempo ajusté de 120 BPM à 90 BPM\n");
+
+    // Parser les arguments: BPM, signature_source, signature_cible
+    char *comma1 = strchr(start, ',');
+    if (!comma1) {
+        maya_error("my.rythme.convertir nécessite 3 arguments: BPM, signature_source, signature_cible", 0);
+        return;
+    }
+
+    *comma1 = '\0';
+    char *bpm_str = start;
+    char *rest = comma1 + 1;
+
+    char *comma2 = strchr(rest, ',');
+    if (!comma2) {
+        maya_error("my.rythme.convertir nécessite 3 arguments: BPM, signature_source, signature_cible", 0);
+        return;
+    }
+
+    *comma2 = '\0';
+    char *sig_source = rest;
+    char *sig_cible = comma2 + 1;
+
+    trim(bpm_str);
+    trim(sig_source);
+    trim(sig_cible);
+
+    // Enlever les guillemets
+    if (sig_source[0] == '\'' && sig_source[strlen(sig_source)-1] == '\'') {
+        sig_source[strlen(sig_source)-1] = '\0';
+        sig_source++;
+    }
+    if (sig_cible[0] == '\'' && sig_cible[strlen(sig_cible)-1] == '\'') {
+        sig_cible[strlen(sig_cible)-1] = '\0';
+        sig_cible++;
+    }
+
+    int bpm_original = evaluate_expression_numeric(bpm_str);
+
+    printf("Conversion rythmique: %s → %s\n", sig_source, sig_cible);
+    printf("BPM original (%s): %d\n", sig_source, bpm_original);
+
+    // Définir les ratios pour chaque signature rythmique
+    struct {
+        char *signature;
+        double ratio; // Ratio par rapport à 4/4
+        char *description;
+    } signatures[] = {
+        {"4/4", 1.0, "Temps standard, 4 noires par mesure"},
+        {"3/4", 0.75, "Valse, 3 noires par mesure"},
+        {"2/4", 0.5, "Marche, 2 noires par mesure"},
+        {"6/8", 0.75, "Compound duple, 6 croches par mesure"},
+        {"5/4", 1.25, "Temps irrégulier, 5 noires par mesure"},
+        {"1/2", 0.25, "Très rapide, 1 blanche par mesure"}
+    };
+
+    int sig_count = sizeof(signatures) / sizeof(signatures[0]);
+    double ratio_source = 1.0, ratio_cible = 1.0;
+    int found_source = 0, found_cible = 0;
+
+    // Trouver les ratios des signatures
+    for (int i = 0; i < sig_count; i++) {
+        if (strcmp(signatures[i].signature, sig_source) == 0) {
+            ratio_source = signatures[i].ratio;
+            found_source = 1;
+            printf("Signature source: %s - %s\n", sig_source, signatures[i].description);
+        }
+        if (strcmp(signatures[i].signature, sig_cible) == 0) {
+            ratio_cible = signatures[i].ratio;
+            found_cible = 1;
+            printf("Signature cible: %s - %s\n", sig_cible, signatures[i].description);
+        }
+    }
+
+    if (!found_source) {
+        printf("⚠️ Signature source '%s' non supportée\n", sig_source);
+        printf("Signatures supportées: 4/4, 3/4, 2/4, 6/8, 5/4, 1/2\n");
+        return;
+    }
+
+    if (!found_cible) {
+        printf("⚠️ Signature cible '%s' non supportée\n", sig_cible);
+        printf("Signatures supportées: 4/4, 3/4, 2/4, 6/8, 5/4, 1/2\n");
+        return;
+    }
+
+    // Calculer le BPM converti
+    double bpm_converti = (double)bpm_original * (ratio_cible / ratio_source);
+
+    printf("\n📊 RÉSULTAT DE LA CONVERSION:\n");
+    printf("BPM original (%s): %d\n", sig_source, bpm_original);
+    printf("BPM converti (%s): %.1f\n", sig_cible, bpm_converti);
+    printf("Facteur de conversion: %.3f\n", ratio_cible / ratio_source);
+
+    if (bpm_converti < 60) {
+        printf("🐌 Tempo très lent (Largo)\n");
+    } else if (bpm_converti < 80) {
+        printf("🚶 Tempo lent (Adagio)\n");
+    } else if (bpm_converti < 100) {
+        printf("🎵 Tempo modéré (Andante)\n");
+    } else if (bpm_converti < 120) {
+        printf("⚡ Tempo vif (Allegro)\n");
+    } else {
+        printf("🏃 Tempo rapide (Presto)\n");
+    }
+
     printf("🎼 Conversion rythmique terminée!\n");
 }
 
@@ -2045,16 +2148,115 @@ void handle_renvoie_gamme(char *line) {
     start++;
     *end = '\0';
 
+    // Enlever les guillemets
+    if (start[0] == '\'' && start[strlen(start)-1] == '\'') {
+        start[strlen(start)-1] = '\0';
+        start++;
+    }
+
     printf("🎼 GAMME MUSICALE MAYA 🎼\n");
     printf("Gamme demandée: %s\n", start);
 
-    if (strstr(start, "Do") || strstr(start, "C")) {
-        printf("Notes de la gamme de Do majeur:\n");
-        printf("Do - Ré - Mi - Fa - Sol - La - Si - Do\n");
-        printf("C  - D  - E  - F  - G   - A  - B  - C\n");
-    } else {
-        printf("Gamme générique: Do - Ré - Mi - Fa - Sol - La - Si\n");
+    // Base de données des gammes principales
+    struct {
+        char *nom;
+        char *tonique;
+        char *notes_fr[8];
+        char *notes_en[8];
+        char *intervalles;
+        char *caracteristiques;
+    } gammes[] = {
+        {"Do majeur", "Do", {"Do", "Ré", "Mi", "Fa", "Sol", "La", "Si", "Do"}, 
+         {"C", "D", "E", "F", "G", "A", "B", "C"}, 
+         "T-T-1/2T-T-T-T-1/2T", "Gamme naturelle, joyeuse"},
+        {"Ré majeur", "Ré", {"Ré", "Mi", "Fa#", "Sol", "La", "Si", "Do#", "Ré"}, 
+         {"D", "E", "F#", "G", "A", "B", "C#", "D"}, 
+         "T-T-1/2T-T-T-T-1/2T", "2 dièses"},
+        {"Mi majeur", "Mi", {"Mi", "Fa#", "Sol#", "La", "Si", "Do#", "Ré#", "Mi"}, 
+         {"E", "F#", "G#", "A", "B", "C#", "D#", "E"}, 
+         "T-T-1/2T-T-T-T-1/2T", "4 dièses"},
+        {"Fa majeur", "Fa", {"Fa", "Sol", "La", "Sib", "Do", "Ré", "Mi", "Fa"}, 
+         {"F", "G", "A", "Bb", "C", "D", "E", "F"}, 
+         "T-T-1/2T-T-T-T-1/2T", "1 bémol"},
+        {"Sol majeur", "Sol", {"Sol", "La", "Si", "Do", "Ré", "Mi", "Fa#", "Sol"}, 
+         {"G", "A", "B", "C", "D", "E", "F#", "G"}, 
+         "T-T-1/2T-T-T-T-1/2T", "1 dièse"},
+        {"La majeur", "La", {"La", "Si", "Do#", "Ré", "Mi", "Fa#", "Sol#", "La"}, 
+         {"A", "B", "C#", "D", "E", "F#", "G#", "A"}, 
+         "T-T-1/2T-T-T-T-1/2T", "3 dièses"},
+        {"Si majeur", "Si", {"Si", "Do#", "Ré#", "Mi", "Fa#", "Sol#", "La#", "Si"}, 
+         {"B", "C#", "D#", "E", "F#", "G#", "A#", "B"}, 
+         "T-T-1/2T-T-T-T-1/2T", "5 dièses"},
+        {"La mineur", "La", {"La", "Si", "Do", "Ré", "Mi", "Fa", "Sol", "La"}, 
+         {"A", "B", "C", "D", "E", "F", "G", "A"}, 
+         "T-1/2T-T-T-1/2T-T-T", "Gamme mineure naturelle, mélancolique"},
+        {"Do mineur", "Do", {"Do", "Ré", "Mib", "Fa", "Sol", "Lab", "Sib", "Do"}, 
+         {"C", "D", "Eb", "F", "G", "Ab", "Bb", "C"}, 
+         "T-1/2T-T-T-1/2T-T-T", "3 bémols"},
+        {"Ré mineur", "Ré", {"Ré", "Mi", "Fa", "Sol", "La", "Sib", "Do", "Ré"}, 
+         {"D", "E", "F", "G", "A", "Bb", "C", "D"}, 
+         "T-1/2T-T-T-1/2T-T-T", "1 bémol"},
+        {"Mi mineur", "Mi", {"Mi", "Fa#", "Sol", "La", "Si", "Do", "Ré", "Mi"}, 
+         {"E", "F#", "G", "A", "B", "C", "D", "E"}, 
+         "T-1/2T-T-T-1/2T-T-T", "1 dièse"},
+        {"Sol mineur", "Sol", {"Sol", "La", "Sib", "Do", "Ré", "Mib", "Fa", "Sol"}, 
+         {"G", "A", "Bb", "C", "D", "Eb", "F", "G"}, 
+         "T-1/2T-T-T-1/2T-T-T", "2 bémols"}
+    };
+
+    int gamme_count = sizeof(gammes) / sizeof(gammes[0]);
+    int found = -1;
+
+    // Rechercher la gamme
+    for (int i = 0; i < gamme_count; i++) {
+        if (strcasecmp(gammes[i].nom, start) == 0 || 
+            strcasecmp(gammes[i].tonique, start) == 0) {
+            found = i;
+            break;
+        }
     }
+
+    if (found == -1) {
+        printf("❌ Gamme '%s' non trouvée\n", start);
+        printf("💡 Gammes disponibles:\n");
+        for (int i = 0; i < gamme_count && i < 8; i++) {
+            printf("   - %s\n", gammes[i].nom);
+        }
+        printf("   ... et %d autres\n", gamme_count - 8);
+        return;
+    }
+
+    printf("\n📊 GAMME TROUVÉE:\n");
+    printf("Nom: %s\n", gammes[found].nom);
+    printf("Tonique: %s\n", gammes[found].tonique);
+    printf("Caractéristiques: %s\n", gammes[found].caracteristiques);
+    printf("Structure d'intervalles: %s\n", gammes[found].intervalles);
+
+    printf("\n🎼 NOTES DE LA GAMME:\n");
+    printf("Notation française: ");
+    for (int i = 0; i < 8; i++) {
+        printf("%s", gammes[found].notes_fr[i]);
+        if (i < 7) printf(" - ");
+    }
+    printf("\n");
+
+    printf("Notation internationale: ");
+    for (int i = 0; i < 8; i++) {
+        printf("%s", gammes[found].notes_en[i]);
+        if (i < 7) printf(" - ");
+    }
+    printf("\n");
+
+    printf("\n🎹 DEGRÉS DE LA GAMME:\n");
+    char *degres[] = {"I (Tonique)", "II (Sus-tonique)", "III (Médiante)", 
+                      "IV (Sous-dominante)", "V (Dominante)", "VI (Sus-dominante)", 
+                      "VII (Sensible)", "VIII (Octave)"};
+    
+    for (int i = 0; i < 8; i++) {
+        printf("%s: %s (%s)\n", degres[i], gammes[found].notes_fr[i], gammes[found].notes_en[i]);
+    }
+
+    printf("\n✅ Gamme analysée avec succès!\n");
 }
 
 void handle_obtenir_gamme(char *line) {
@@ -2069,10 +2271,123 @@ void handle_obtenir_gamme(char *line) {
     start++;
     *end = '\0';
 
+    // Enlever les guillemets
+    if (start[0] == '\'' && start[strlen(start)-1] == '\'') {
+        start[strlen(start)-1] = '\0';
+        start++;
+    }
+
     printf("🎼 IDENTIFICATION DE GAMME MAYA 🎼\n");
     printf("Notes analysées: %s\n", start);
-    printf("Gamme identifiée: Do majeur (C Major)\n");
-    printf("Type: Gamme diatonique majeure\n");
+
+    // Parser les notes séparées par des virgules ou des espaces
+    char notes_input[MAX_STRING_VALUE];
+    strcpy(notes_input, start);
+
+    char *notes[12];
+    int note_count = 0;
+    char *token = strtok(notes_input, ", ");
+    
+    while (token != NULL && note_count < 12) {
+        trim(token);
+        notes[note_count] = strdup(token);
+        note_count++;
+        token = strtok(NULL, ", ");
+    }
+
+    if (note_count < 3) {
+        printf("❌ Pas assez de notes pour identifier une gamme (minimum 3)\n");
+        return;
+    }
+
+    printf("Notes détectées (%d): ", note_count);
+    for (int i = 0; i < note_count; i++) {
+        printf("%s", notes[i]);
+        if (i < note_count - 1) printf(", ");
+    }
+    printf("\n");
+
+    // Algorithme simple d'identification de gamme
+    // Vérifier les gammes majeures et mineures principales
+    struct {
+        char *nom;
+        char *pattern_notes[8];
+        int confidence;
+    } gammes_test[] = {
+        {"Do majeur", {"Do", "Ré", "Mi", "Fa", "Sol", "La", "Si", "Do"}, 0},
+        {"Do majeur", {"C", "D", "E", "F", "G", "A", "B", "C"}, 0},
+        {"La mineur", {"La", "Si", "Do", "Ré", "Mi", "Fa", "Sol", "La"}, 0},
+        {"La mineur", {"A", "B", "C", "D", "E", "F", "G", "A"}, 0},
+        {"Sol majeur", {"Sol", "La", "Si", "Do", "Ré", "Mi", "Fa#", "Sol"}, 0},
+        {"Sol majeur", {"G", "A", "B", "C", "D", "E", "F#", "G"}, 0},
+        {"Ré majeur", {"Ré", "Mi", "Fa#", "Sol", "La", "Si", "Do#", "Ré"}, 0},
+        {"Ré majeur", {"D", "E", "F#", "G", "A", "B", "C#", "D"}, 0}
+    };
+
+    int gamme_test_count = sizeof(gammes_test) / sizeof(gammes_test[0]);
+
+    // Calculer la correspondance pour chaque gamme
+    for (int g = 0; g < gamme_test_count; g++) {
+        gammes_test[g].confidence = 0;
+        
+        for (int i = 0; i < note_count; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (strcasecmp(notes[i], gammes_test[g].pattern_notes[j]) == 0) {
+                    gammes_test[g].confidence++;
+                    break;
+                }
+            }
+        }
+    }
+
+    // Trouver la meilleure correspondance
+    int best_match = 0;
+    for (int i = 1; i < gamme_test_count; i++) {
+        if (gammes_test[i].confidence > gammes_test[best_match].confidence) {
+            best_match = i;
+        }
+    }
+
+    printf("\n🎯 RÉSULTAT DE L'IDENTIFICATION:\n");
+    
+    if (gammes_test[best_match].confidence >= note_count * 0.6) {
+        printf("Gamme identifiée: %s\n", gammes_test[best_match].nom);
+        printf("Confiance: %d/%d notes correspondent (%.1f%%)\n", 
+               gammes_test[best_match].confidence, note_count,
+               (float)gammes_test[best_match].confidence / note_count * 100);
+        
+        if (strstr(gammes_test[best_match].nom, "majeur")) {
+            printf("Type: Gamme majeure (sonorité joyeuse)\n");
+        } else {
+            printf("Type: Gamme mineure (sonorité mélancolique)\n");
+        }
+    } else {
+        printf("❓ Gamme non identifiée avec certitude\n");
+        printf("Meilleures correspondances:\n");
+        
+        // Trier et afficher les 3 meilleures
+        for (int i = 0; i < 3 && i < gamme_test_count; i++) {
+            int max_idx = 0;
+            for (int j = 1; j < gamme_test_count; j++) {
+                if (gammes_test[j].confidence > gammes_test[max_idx].confidence) {
+                    max_idx = j;
+                }
+            }
+            if (gammes_test[max_idx].confidence > 0) {
+                printf("   %d. %s (%.1f%% correspondance)\n", i+1,
+                       gammes_test[max_idx].nom,
+                       (float)gammes_test[max_idx].confidence / note_count * 100);
+            }
+            gammes_test[max_idx].confidence = -1; // Marquer comme traité
+        }
+    }
+
+    // Libérer la mémoire
+    for (int i = 0; i < note_count; i++) {
+        free(notes[i]);
+    }
+
+    printf("\n✅ Analyse musicale terminée!\n");
 }
 
 // Fonctions pour bases de données

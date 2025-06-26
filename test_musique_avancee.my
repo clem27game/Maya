@@ -1,0 +1,58 @@
+
+# Test des fonctionnalités musicales avancées Maya v5.0
+
+my.console('🎵 === TEST FONCTIONNALITÉS MUSICALES AVANCÉES === 🎵')
+
+# Test 1: Conversion rythmique réelle
+my.console('🥁 Test 1: Conversions rythmiques')
+my.rythme.convertir(120, '4/4', '3/4')
+my.delai(1000)
+my.rythme.convertir(100, '4/4', '6/8')
+my.delai(1000)
+my.rythme.convertir(80, '3/4', '2/4')
+my.delai(1000)
+my.rythme.convertir(140, '4/4', '5/4')
+my.delai(1000)
+
+# Test 2: Gammes majeures complètes
+my.console('🎼 Test 2: Gammes majeures')
+my.renvoie.gamme('Do majeur')
+my.delai(1000)
+my.renvoie.gamme('Sol majeur')
+my.delai(1000)
+my.renvoie.gamme('Ré majeur')
+my.delai(1000)
+my.renvoie.gamme('Fa majeur')
+my.delai(1000)
+
+# Test 3: Gammes mineures
+my.console('🎼 Test 3: Gammes mineures')
+my.renvoie.gamme('La mineur')
+my.delai(1000)
+my.renvoie.gamme('Ré mineur')
+my.delai(1000)
+my.renvoie.gamme('Mi mineur')
+my.delai(1000)
+
+# Test 4: Identification de gammes
+my.console('🔍 Test 4: Identification de gammes')
+my.obtenir.gamme('Do, Ré, Mi, Fa, Sol, La, Si')
+my.delai(1000)
+my.obtenir.gamme('La, Si, Do, Ré, Mi, Fa, Sol')
+my.delai(1000)
+my.obtenir.gamme('Sol, La, Si, Do, Ré, Mi, Fa#')
+my.delai(1000)
+my.obtenir.gamme('C, D, E, F, G, A, B')
+my.delai(1000)
+
+# Test 5: Conversions rythmiques variées
+my.console('⚡ Test 5: Conversions rythmiques avancées')
+my.rythme.convertir(90, '6/8', '4/4')
+my.delai(800)
+my.rythme.convertir(200, '1/2', '4/4')
+my.delai(800)
+my.rythme.convertir(75, '5/4', '3/4')
+my.delai(800)
+
+my.console('🎉 Tests musicaux avancés terminés!')
+my.console('🎵 Maya v5.0 - Fonctionnalités musicales complètes!')
