@@ -1,6 +1,7 @@
 
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99 -g
+CFLAGS = -Wall -Wextra -std=c99 -g -D_GNU_SOURCE
+LDFLAGS = -lm -ldl -lpthread
 TARGET = main
 TARGET_DEBUG = main-debug
 SOURCE = main.c
@@ -10,15 +11,15 @@ all: $(TARGET)
 
 # Compilation normale
 $(TARGET): $(SOURCE)
-	$(CC) $(CFLAGS) -O2 -o $(TARGET) $(SOURCE) -lm -ldl
+	$(CC) $(CFLAGS) -O2 -o $(TARGET) $(SOURCE) $(LDFLAGS)
 
 # Compilation avec debug
 $(TARGET_DEBUG): $(SOURCE)
-	$(CC) $(CFLAGS) -DDEBUG -o $(TARGET_DEBUG) $(SOURCE) -lm -ldl
+	$(CC) $(CFLAGS) -DDEBUG -o $(TARGET_DEBUG) $(SOURCE) $(LDFLAGS)
 
 # Nettoyage
 clean:
-	rm -f $(TARGET) $(TARGET_DEBUG) *.o
+	rm -f $(TARGET) $(TARGET_DEBUG) *.o *.so
 
 # Exécution avec un fichier test
 test: $(TARGET)
