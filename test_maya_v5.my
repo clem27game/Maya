@@ -12,10 +12,10 @@ my.console('🧮 === MATHÉMATIQUES AVANCÉES === 🧮')
 # Tests des nouvelles fonctions mathématiques
 my.math.median([1, 3, 5, 7, 9])
 my.math.moyenne([2, 4, 6, 8, 10])
-my.math.cube(3)
-my.math.carre(5)
-my.math.racine(16)
-my.math.degres(5)
+my.math.cube(8)
+my.math.carre(8)
+my.math.racine(12)
+my.math.degres(9)
 
 # Théorèmes
 my.console('📐 Tests des théorèmes:')
