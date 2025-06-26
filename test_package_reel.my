@@ -1,0 +1,23 @@
+
+# Test du système de packages C réels Maya v4.0
+
+my.console('🔧 === Test Package C Réel === 🔧')
+
+# Charger le package C exemple
+my.package.charge('exemple_package.c')
+
+my.console('📋 Test des fonctions du package C:')
+
+# Test des fonctions chargées depuis le package C
+may.package.salut()
+my.delai(1000)
+
+may.package.random.avance()
+my.delai(1000)
+
+may.package.calcul.scientifique()
+my.delai(1000)
+
+may.package.systeme.info()
+
+my.console('🎉 Tests du package C terminés!')

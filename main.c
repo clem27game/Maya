@@ -5,6 +5,8 @@
 #include <ctype.h>
 #include <time.h>
 #include <unistd.h>
+#include <dlfcn.h>
+#include <sys/wait.h>
 
 #define MAX_LINE_LENGTH 1000
 #define MAX_VARIABLES 100
@@ -42,8 +44,12 @@ typedef struct {
 
 typedef struct {
     char path[MAX_STRING_VALUE];
+    char so_path[MAX_STRING_VALUE];
     void *handle;
     int loaded;
+    char function_names[MAX_FUNCTIONS][MAX_VAR_NAME];
+    void (*functions[MAX_FUNCTIONS])();
+    int function_count;
 } MayaPackage;
 
 typedef struct {
@@ -115,6 +121,9 @@ void execute_maya_function(char *function_name, char *args);
 void load_maya_module(char *path);
 void load_maya_package(char *path);
 int find_maya_function(char *name);
+int compile_c_package(char *source_path, char *output_path);
+void call_package_function(char *function_name, char *args);
+int find_package_function(char *name);
 
 // Fonction pour afficher les erreurs Maya
 void maya_error(const char *message, int line_number) {
@@ -1548,11 +1557,30 @@ void load_maya_module(char *path) {
     fclose(file);
 }
 
-// Fonction pour charger un package C (simulation)
+// Fonction pour compiler un package C en bibliothèque partagée
+int compile_c_package(char *source_path, char *output_path) {
+    char compile_cmd[MAX_STRING_VALUE * 2];
+    snprintf(compile_cmd, sizeof(compile_cmd), 
+             "gcc -shared -fPIC -o %s %s 2>/dev/null", output_path, source_path);
+    
+    printf("🔨 Compilation du package C: %s\n", source_path);
+    printf("📦 Commande: %s\n", compile_cmd);
+    
+    int result = system(compile_cmd);
+    if (result == 0) {
+        printf("✅ Compilation réussie! Bibliothèque: %s\n", output_path);
+        return 1;
+    } else {
+        printf("❌ Échec de la compilation!\n");
+        return 0;
+    }
+}
+
+// Fonction pour charger un package C réel
 void load_maya_package(char *path) {
     printf("🔧 Chargement du package C: %s\n", path);
     
-    // Vérifier si le fichier existe
+    // Vérifier si le fichier source existe
     FILE *file = fopen(path, "r");
     if (!file) {
         maya_error("Impossible d'ouvrir le fichier package C", 0);
@@ -1560,18 +1588,95 @@ void load_maya_package(char *path) {
     }
     fclose(file);
     
-    if (maya_package_count < MAX_PACKAGES) {
-        strcpy(maya_packages[maya_package_count].path, path);
-        maya_packages[maya_package_count].handle = NULL; // Simulation
-        maya_packages[maya_package_count].loaded = 1;
-        maya_package_count++;
-        
-        printf("✅ Package C chargé avec succès!\n");
-        printf("🚀 Nouvelles fonctions 'may*' disponibles depuis ce package.\n");
-        printf("💡 Exemple: maya compilera et exécutera votre code C personnalisé!\n");
-    } else {
+    if (maya_package_count >= MAX_PACKAGES) {
         maya_error("Trop de packages chargés", 0);
+        return;
     }
+    
+    // Générer le nom de la bibliothèque partagée
+    char so_path[MAX_STRING_VALUE];
+    snprintf(so_path, sizeof(so_path), "/tmp/maya_package_%d.so", maya_package_count);
+    
+    // Compiler le package C
+    if (!compile_c_package(path, so_path)) {
+        maya_error("Échec de la compilation du package C", 0);
+        return;
+    }
+    
+    // Charger la bibliothèque partagée
+    void *handle = dlopen(so_path, RTLD_LAZY);
+    if (!handle) {
+        printf("❌ Erreur de chargement: %s\n", dlerror());
+        maya_error("Impossible de charger la bibliothèque compilée", 0);
+        return;
+    }
+    
+    // Initialiser le package
+    strcpy(maya_packages[maya_package_count].path, path);
+    strcpy(maya_packages[maya_package_count].so_path, so_path);
+    maya_packages[maya_package_count].handle = handle;
+    maya_packages[maya_package_count].loaded = 1;
+    maya_packages[maya_package_count].function_count = 0;
+    
+    // Tenter de charger des fonctions prédéfinies du package exemple
+    char *function_names[] = {
+        "may_package_salut",
+        "may_package_random_avance", 
+        "may_package_calcul_scientifique",
+        "may_package_systeme_info"
+    };
+    
+    for (int i = 0; i < 4; i++) {
+        void (*func)() = dlsym(handle, function_names[i]);
+        if (func) {
+            strcpy(maya_packages[maya_package_count].function_names[maya_packages[maya_package_count].function_count], 
+                   function_names[i]);
+            maya_packages[maya_package_count].functions[maya_packages[maya_package_count].function_count] = func;
+            maya_packages[maya_package_count].function_count++;
+            printf("📋 Fonction chargée: %s\n", function_names[i]);
+        }
+    }
+    
+    printf("✅ Package C chargé avec succès!\n");
+    printf("🚀 %d fonctions disponibles depuis ce package.\n", 
+           maya_packages[maya_package_count].function_count);
+    printf("💡 Utilisez les fonctions avec leur nom complet (ex: may.package.salut)\n");
+    
+    maya_package_count++;
+}
+
+// Fonction pour trouver une fonction dans les packages
+int find_package_function(char *name) {
+    for (int i = 0; i < maya_package_count; i++) {
+        if (!maya_packages[i].loaded) continue;
+        
+        for (int j = 0; j < maya_packages[i].function_count; j++) {
+            if (strcmp(maya_packages[i].function_names[j], name) == 0) {
+                return i * MAX_FUNCTIONS + j; // Index unique
+            }
+        }
+    }
+    return -1;
+}
+
+// Fonction pour appeler une fonction de package
+void call_package_function(char *function_name, char *args) {
+    int func_index = find_package_function(function_name);
+    
+    if (func_index == -1) {
+        maya_error("Fonction de package non trouvée", 0);
+        return;
+    }
+    
+    int package_index = func_index / MAX_FUNCTIONS;
+    int local_index = func_index % MAX_FUNCTIONS;
+    
+    printf("🔄 Exécution de la fonction C: %s\n", function_name);
+    
+    // Appeler la fonction
+    maya_packages[package_index].functions[local_index]();
+    
+    printf("✅ Fonction C exécutée avec succès!\n");
 }
 
 // Fonction pour trouver une fonction Maya
@@ -1768,20 +1873,44 @@ void interpret_line(char *line) {
         return;
     }
     else if (strstr(line, "may.")) {
-        // Gestion des fonctions réutilisables personnalisées
-        char *paren = strchr(line, '(');
+        // Gestion des fonctions réutilisables et packages C
+        char line_copy[MAX_LINE_LENGTH];
+        strcpy(line_copy, line);
+        
+        char *paren = strchr(line_copy, '(');
+        char *func_name = line_copy;
+        char *args = "";
+        
         if (paren) {
             *paren = '\0';
-            char *func_name = line;
-            trim(func_name);
-            
-            char *args = paren + 1;
+            args = paren + 1;
             char *end_paren = strrchr(args, ')');
             if (end_paren) *end_paren = '\0';
-            
+        }
+        
+        trim(func_name);
+        
+        // Convertir le nom de fonction Maya vers le nom C
+        char c_func_name[MAX_VAR_NAME];
+        strcpy(c_func_name, func_name);
+        
+        // Remplacer les points par des underscores pour les fonctions C
+        for (int i = 0; c_func_name[i]; i++) {
+            if (c_func_name[i] == '.') {
+                c_func_name[i] = '_';
+            }
+        }
+        
+        // Essayer d'abord les fonctions de packages C
+        if (find_package_function(c_func_name) != -1) {
+            call_package_function(c_func_name, args);
+        }
+        // Sinon, essayer les fonctions Maya réutilisables
+        else if (find_maya_function(func_name) != -1) {
             execute_maya_function(func_name, args);
-        } else {
-            execute_maya_function(line, "");
+        }
+        else {
+            maya_error("Fonction may non trouvée", 0);
         }
     }
     else if (strstr(line, "my.")) {
@@ -1867,6 +1996,15 @@ int main(int argc, char *argv[]) {
         
         if (strlen(line) > 0) {
             interpret_line(line);
+        }
+    }
+    
+    // Nettoyer les packages chargés
+    for (int i = 0; i < maya_package_count; i++) {
+        if (maya_packages[i].handle) {
+            dlclose(maya_packages[i].handle);
+            // Supprimer le fichier temporaire
+            unlink(maya_packages[i].so_path);
         }
     }
     

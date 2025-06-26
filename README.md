@@ -337,13 +337,18 @@ MAY est encore tout noeuf ! son développement viens a peine de commencer ! donc
 pour les versions qui vont venir nous prévoyons les fonctionnalités suivantes :
 
 1) D'avantages de Simulations (plus de scientifiques,robotique, IA, univers quantique, atomes, voyages dans le temps, contes de fées, vampires, sirènes, monstres, autres mondes comme le monde azem, le monde odelia et dautres preparez vous a plonger dans des mondes autant magiques que déconcertants en Maya etc...) 🌷
-2) calculs mathématiques et d'arithmétique plus avancés ! (théorème de Pythagore, théorème de thales, dautres théorèmes uniques et de dautres mathématiciens connus ou moins connus, puissances du carré ou au cube, géométrie, degrés, racines etc...) 🐝
+2) calculs mathématiques et d'arithmétique plus avancés ! (théorème de Pythagore, théorème de thales, d'autres théorèmes uniques et de d'autres mathématiciens connus ou moins connus, puissances du carré ou au cube, géométrie, degrés, racines etc...) 🐝
 3) fonctionnalités en rapport avec la gestion finance et le bac stmg ou général :) (outils de revisions spécialement conçu par MAYA pour vous, comme des petits exercices a cree avec maya pour reviser, des outils creatifs dans la gestion finance et d'autres matières du bac général ou technologe, outils de comptabilité pour calculer le BFR, le FRNG, la trésorerie nette, les dépréciations, les immobilisations , les amortissements etc....)🍅
 4) fonctionnalités de jeux en rapport avec la philosophie (mini-quizz philosophes proposés par maya, jeux speciaux uniques imagines spécialement par la creatrice de Maya pour vous faire réfléchir, outils creatifs philosophes en maya, etc...) 💚
 5) Plus de mini-jeux dans la console (Je vous réserve la surprise ! il y aura même des jeux hybrides et inedits imaginés par moi, la créatice de Maya) 🍭
 6) gestion de fichiers (lire des fichiers, en créer , les excécuter,en supprimer etc...) 😈
 
    et bien plus!
+
+pour créer un package pour maya en utilisant C,
+Les développeurs doivent coder et écrire leurs fonctions dans des fichiers C avec le langage de programmation C (ils peuvent inclure des modules, des lib, de nouvelles fonctionnalités pour maya etc), puis, charger et compiler automatiquement les fonctions et leur code C dans leur code maya avec ; my.package.charge (et le bon chemin de leur fichier C principal où se situent leurs fonctions et codes pour les nouvelles fonctionnalités),
+Maya COMPILE ET CHARGE RÉELLEMENT les fonctions et fonctionnalités écrites en C pour le package, avec le prefix may pour les fonctions non natives à maya,
+Le processus inclut : compilation automatique en bibliothèque partagée (.so), chargement dynamique avec dlopen, et appel direct des fonctions C!
 
 **Le langage de programmation Maya a été imaginer et crée de A a Z toute seule par nekoclem (de son vrai nom Clémence Baril), née le 12 février 2007 ayant toujours rêver de crée son propre langage de programmation** 
 
