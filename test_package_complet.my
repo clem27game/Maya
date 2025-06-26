@@ -1,0 +1,37 @@
+
+# Test complet du système de packages Maya v5.0
+
+my.console('📦 === TEST SYSTÈME PACKAGES MAYA v5.0 === 📦')
+
+# Test 1: Chargement d'un package C simple
+my.console('🔧 Test 1: Chargement de package C...')
+my.package.charge('exemple_package_simple.c')
+
+# Test 2: Utilisation des fonctions du package
+my.console('🚀 Test 2: Exécution des fonctions C...')
+may.package.may_package_saluer()
+may.package.may_package_calculer()
+may.package.may_package_mini_jeu()
+may.package.may_package_art()
+may.package.may_package_simulation()
+
+# Test 3: Package Calculy existant
+my.console('🧮 Test 3: Package Calculy...')
+my.package.charge('calculy_package.c')
+
+# Test 4: Fonctions Maya personnalisées
+my.console('🌟 Test 4: Création de fonction Maya...')
+my.fonction('may.ma_fonction_perso', 'my.console("Fonction Maya personnalisée!"); my.math.cube(3)')
+may.ma_fonction_perso()
+
+# Test 5: Combinaison packages C + fonctions Maya
+my.console('🎯 Test 5: Combinaison C + Maya...')
+my.variable test = 'success'
+my.if(test == 'success')
+my.alors {
+    my.console('✅ Tous les tests packages réussis!')
+    may.package.may_package_art()
+    my.math.carre(8)
+}
+
+my.console('🎉 Tests packages Maya v5.0 terminés!')

@@ -1781,44 +1781,88 @@ void load_maya_module(char *path) {
     fclose(file);
 }
 
-// Fonction pour compiler un package C en bibliothèque partagée (améliorée)
+// Fonction pour compiler un package C en bibliothèque partagée (ultra-robuste)
 int compile_c_package(char *source_path, char *output_path) {
     char compile_cmd[MAX_STRING_VALUE * 2];
+    char error_file[MAX_STRING_VALUE];
     
-    // Compilation plus robuste avec support des modules C standards
+    // Fichier temporaire pour capturer les erreurs
+    snprintf(error_file, sizeof(error_file), "/tmp/maya_compile_errors_%ld.txt", time(NULL) % 10000);
+    
+    // Compilation robuste avec tous les flags nécessaires
     snprintf(compile_cmd, sizeof(compile_cmd), 
-             "gcc -shared -fPIC -rdynamic -O2 -o %s %s -lm -ldl -lpthread -std=c99 2>/dev/null", 
-             output_path, source_path);
+             "gcc -shared -fPIC -rdynamic -O2 -Wall -Wextra "
+             "-o %s %s -lm -ldl -lpthread -std=c99 2>%s", 
+             output_path, source_path, error_file);
     
-    printf("🔨 COMPILATION PACKAGE C MAYA 🔨\n");
+    printf("🔨 COMPILATION PACKAGE C MAYA v5.0 🔨\n");
     printf("📂 Source: %s\n", source_path);
-    printf("📦 Sortie: %s\n", output_path);
+    printf("📦 Output: %s\n", output_path);
+    printf("🔧 Compilation avec optimisations...\n");
     
-    // Vérifier que le fichier source existe
+    // Vérifier que le fichier source existe et est lisible
     FILE *test = fopen(source_path, "r");
     if (!test) {
-        printf("❌ Fichier source introuvable!\n");
+        printf("❌ Impossible d'accéder au fichier source!\n");
         return 0;
+    }
+    
+    // Vérifier le contenu du fichier
+    char first_line[256];
+    if (fgets(first_line, sizeof(first_line), test)) {
+        printf("📄 Première ligne détectée: %.50s%s\n", 
+               first_line, strlen(first_line) > 50 ? "..." : "");
     }
     fclose(test);
     
+    // Tentative de compilation
     int result = system(compile_cmd);
+    
     if (result == 0) {
         printf("✅ COMPILATION RÉUSSIE!\n");
-        printf("🚀 Package C prêt pour Maya!\n");
-        printf("💡 Fonctions disponibles avec préfixe may.package.*\n");
-        return 1;
+        
+        // Vérifier que le fichier de sortie a été créé
+        FILE *output_test = fopen(output_path, "r");
+        if (output_test) {
+            fclose(output_test);
+            printf("📦 Bibliothèque partagée créée avec succès!\n");
+            printf("🚀 Package C prêt pour Maya!\n");
+            printf("💡 Fonctions accessibles via may.package.*\n");
+            
+            // Nettoyer le fichier d'erreurs s'il existe
+            unlink(error_file);
+            return 1;
+        } else {
+            printf("❌ Fichier de sortie non créé malgré compilation réussie\n");
+            return 0;
+        }
     } else {
         printf("❌ ERREUR DE COMPILATION!\n");
-        printf("🔍 Vérifiez votre syntaxe C...\n");
+        printf("🔍 Analyse des erreurs...\n");
         
-        // Compilation avec affichage des erreurs
-        char error_cmd[MAX_STRING_VALUE * 2];
-        snprintf(error_cmd, sizeof(error_cmd), 
-                 "gcc -shared -fPIC -rdynamic -o %s %s -lm -ldl -lpthread -std=c99", 
-                 output_path, source_path);
-        printf("📜 Détails des erreurs:\n");
-        system(error_cmd);
+        // Lire et afficher les erreurs
+        FILE *error_output = fopen(error_file, "r");
+        if (error_output) {
+            char error_line[256];
+            printf("📜 DÉTAILS DES ERREURS:\n");
+            printf("════════════════════════════════════════\n");
+            while (fgets(error_line, sizeof(error_line), error_output)) {
+                printf("   %s", error_line);
+            }
+            printf("════════════════════════════════════════\n");
+            fclose(error_output);
+            unlink(error_file);
+        }
+        
+        printf("💡 CONSEILS POUR CORRIGER:\n");
+        printf("   1. Vérifiez que toutes les fonctions commencent par 'may_package_'\n");
+        printf("   2. Ajoutez #include <stdio.h> en début de fichier\n");
+        printf("   3. Vérifiez la syntaxe C (points-virgules, accolades...)\n");
+        printf("   4. Exemple de fonction valide:\n");
+        printf("      void may_package_ma_fonction() {\n");
+        printf("          printf(\"Hello from package!\\n\");\n");
+        printf("      }\n");
+        
         return 0;
     }
 }
@@ -2088,38 +2132,49 @@ void handle_util_db(char *line) {
     printf("🎮 Base de données prête pour vos jeux et simulations!\n");
 }
 
-// Fonction pour charger un package C réel
+// Fonction pour charger un package C réel (améliorée)
 void load_maya_package(char *path) {
-    printf("🔧 Chargement du package C: %s\n", path);
+    printf("🔧 CHARGEMENT PACKAGE C MAYA SIMPLIFIÉ 🔧\n");
+    printf("📂 Fichier source: %s\n", path);
     
     // Vérifier si le fichier source existe
     FILE *file = fopen(path, "r");
     if (!file) {
-        maya_error("Impossible d'ouvrir le fichier package C", 0);
+        printf("❌ Fichier source introuvable: %s\n", path);
+        printf("💡 Conseil: Vérifiez le nom et l'emplacement du fichier\n");
         return;
     }
     fclose(file);
     
     if (maya_package_count >= MAX_PACKAGES) {
-        maya_error("Trop de packages chargés", 0);
+        printf("❌ Limite de packages atteinte (%d max)\n", MAX_PACKAGES);
         return;
     }
     
-    // Générer le nom de la bibliothèque partagée
+    // Générer le nom de la bibliothèque partagée unique
     char so_path[MAX_STRING_VALUE];
-    snprintf(so_path, sizeof(so_path), "./maya_package_%d.so", maya_package_count);
+    snprintf(so_path, sizeof(so_path), "./maya_pkg_%d_%ld.so", 
+             maya_package_count, time(NULL) % 10000);
     
-    // Compiler le package C
+    printf("🔨 Compilation en cours...\n");
+    
+    // Compiler le package C avec options étendues
     if (!compile_c_package(path, so_path)) {
-        maya_error("Échec de la compilation du package C", 0);
+        printf("❌ COMPILATION ÉCHOUÉE!\n");
+        printf("🔍 Solutions possibles:\n");
+        printf("   1. Vérifiez la syntaxe C\n");
+        printf("   2. Assurez-vous que les fonctions commencent par 'may_package_'\n");
+        printf("   3. Incluez les en-têtes nécessaires (#include <stdio.h>)\n");
         return;
     }
     
     // Charger la bibliothèque partagée
+    printf("📦 Chargement de la bibliothèque...\n");
     void *handle = dlopen(so_path, RTLD_NOW | RTLD_GLOBAL);
     if (!handle) {
-        printf("❌ Erreur de chargement: %s\n", dlerror());
-        maya_error("Impossible de charger la bibliothèque compilée", 0);
+        printf("❌ Erreur de chargement dynamique:\n");
+        printf("   %s\n", dlerror());
+        printf("🔧 Le package a été compilé mais ne peut pas être chargé\n");
         return;
     }
     
@@ -2131,27 +2186,40 @@ void load_maya_package(char *path) {
     maya_packages[maya_package_count].function_count = 0;
     
     // Détecter automatiquement les fonctions dans le fichier source
+    printf("🔍 Détection automatique des fonctions...\n");
     char detected_functions[MAX_FUNCTIONS][MAX_VAR_NAME];
     int detected_count = detect_package_functions(path, detected_functions);
     
+    if (detected_count == 0) {
+        printf("⚠️ Aucune fonction détectée!\n");
+        printf("💡 Les fonctions doivent commencer par 'may_package_'\n");
+        printf("   Exemple: void may_package_ma_fonction() { ... }\n");
+    }
+    
     // Charger les fonctions détectées
+    int loaded_count = 0;
     for (int i = 0; i < detected_count; i++) {
         void (*func)() = dlsym(handle, detected_functions[i]);
         if (func) {
-            strcpy(maya_packages[maya_package_count].function_names[maya_packages[maya_package_count].function_count], 
+            strcpy(maya_packages[maya_package_count].function_names[loaded_count], 
                    detected_functions[i]);
-            maya_packages[maya_package_count].functions[maya_packages[maya_package_count].function_count] = func;
-            maya_packages[maya_package_count].function_count++;
+            maya_packages[maya_package_count].functions[loaded_count] = func;
+            loaded_count++;
             printf("✅ Fonction chargée: %s\n", detected_functions[i]);
         } else {
-            printf("⚠️ Fonction trouvée mais non chargeable: %s\n", detected_functions[i]);
+            printf("⚠️ Fonction '%s' trouvée mais non chargeable: %s\n", 
+                   detected_functions[i], dlerror());
         }
     }
     
-    printf("🎉 Package C chargé avec succès!\n");
-    printf("🚀 %d fonctions disponibles depuis ce package.\n", 
-           maya_packages[maya_package_count].function_count);
-    printf("💡 Utilisez les fonctions avec leur préfixe may.package.*\n");
+    maya_packages[maya_package_count].function_count = loaded_count;
+    
+    printf("🎉 PACKAGE C CHARGÉ AVEC SUCCÈS!\n");
+    printf("📊 Statistiques:\n");
+    printf("   - Fonctions détectées: %d\n", detected_count);
+    printf("   - Fonctions chargées: %d\n", loaded_count);
+    printf("💡 Utilisez: may.package.nom_fonction()\n");
+    printf("🚀 Package prêt à l'emploi!\n");
     
     maya_package_count++;
 }
@@ -2973,7 +3041,7 @@ void interpret_line(char *line) {
         return;
     }
     else if (strstr(line, "may.")) {
-        // Gestion des fonctions réutilisables et packages C
+        // Gestion améliorée des fonctions réutilisables et packages C
         char line_copy[MAX_LINE_LENGTH];
         strcpy(line_copy, line);
         
@@ -2990,6 +3058,8 @@ void interpret_line(char *line) {
         
         trim(func_name);
         
+        printf("🔍 Recherche de la fonction: %s\n", func_name);
+        
         // Convertir le nom de fonction Maya vers le nom C
         char c_func_name[MAX_VAR_NAME];
         strcpy(c_func_name, func_name);
@@ -3001,16 +3071,42 @@ void interpret_line(char *line) {
             }
         }
         
+        printf("🔧 Nom C converti: %s\n", c_func_name);
+        
         // Essayer d'abord les fonctions de packages C
         if (find_package_function(c_func_name) != -1) {
+            printf("📦 Fonction trouvée dans package C\n");
             call_package_function(c_func_name, args);
         }
         // Sinon, essayer les fonctions Maya réutilisables
         else if (find_maya_function(func_name) != -1) {
+            printf("🌟 Fonction Maya réutilisable trouvée\n");
             execute_maya_function(func_name, args);
         }
         else {
-            maya_error("Fonction may non trouvée", 0);
+            printf("❌ Fonction introuvable: %s\n", func_name);
+            printf("📋 Fonctions disponibles:\n");
+            
+            // Lister les fonctions de packages
+            printf("   🅒 Packages C:\n");
+            for (int i = 0; i < maya_package_count; i++) {
+                if (maya_packages[i].loaded) {
+                    for (int j = 0; j < maya_packages[i].function_count; j++) {
+                        printf("      - %s\n", maya_packages[i].function_names[j]);
+                    }
+                }
+            }
+            
+            // Lister les fonctions Maya
+            printf("   🌟 Fonctions Maya:\n");
+            for (int i = 0; i < maya_function_count; i++) {
+                printf("      - %s\n", maya_functions[i].name);
+            }
+            
+            if (maya_package_count == 0 && maya_function_count == 0) {
+                printf("   (Aucune fonction personnalisée chargée)\n");
+                printf("💡 Utilisez my.package.charge('fichier.c') pour charger un package\n");
+            }
         }
     }
     else if (strstr(line, "my.")) {

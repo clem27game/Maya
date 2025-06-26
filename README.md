@@ -1,4 +1,3 @@
-
 # **🧡💖🍓 Langage De programmation Maya v5.0!❤️🐬**
 
 ![maya](http://www.image-heberg.fr/files/17507795351188297358.webp)
@@ -262,7 +261,7 @@ my.execute.c('
     #include <math.h>
     double result = sqrt(25);
     printf("Racine de 25: %.2f\\n", result);
-    
+
     for(int i = 1; i <= 5; i++) {
         printf("Maya x %d = %d\\n", i, i * 7);
     }
@@ -273,9 +272,11 @@ my.console('C et Maya fonctionnent ensemble!')
 
 ---
 
-## **🚀 PACKAGES C SIMPLIFIÉS**
+## **📦 PACKAGES C ULTRA-SIMPLIFIÉS v5.0**
 
-Créer un package C pour Maya est maintenant ultra-simple!
+Créer un package C pour Maya est maintenant **VRAIMENT** simple! Plus de problèmes de compilation!
+
+### **🚀 CRÉATION EN 3 ÉTAPES:**
 
 **1. Écrivez votre fichier C:**
 ```c
@@ -283,25 +284,66 @@ Créer un package C pour Maya est maintenant ultra-simple!
 #include <stdio.h>
 #include <math.h>
 
-void may_package_calcul_avance() {
-    printf("🔢 Calcul avancé depuis C!\n");
-    double result = pow(3, 4);
-    printf("3^4 = %.0f\n", result);
+// IMPORTANT: Les fonctions doivent commencer par "may_package_"
+void may_package_saluer() {
+    printf("🌟 Bonjour depuis mon package!\n");
 }
 
-void may_package_message_perso() {
-    printf("💖 Message depuis mon package C!\n");
+void may_package_calculer() {
+    double result = pow(3, 4);
+    printf("🔢 3^4 = %.0f\n", result);
+}
+
+void may_package_jeu() {
+    printf("🎮 Mini-jeu depuis C!\n");
+    printf("🎯 Vous gagnez toujours!\n");
 }
 ```
 
 **2. Chargez dans Maya:**
 ```my
 my.package.charge('mon_package.c')
-may.package.calcul_avance()
-may.package.message_perso()
 ```
 
-**✅ C'est tout! Maya compile et charge automatiquement!**
+**3. Utilisez vos fonctions:**
+```my
+may.package.may_package_saluer()
+may.package.may_package_calculer()
+may.package.may_package_jeu()
+```
+
+### **✅ SYSTÈME ULTRA-ROBUSTE:**
+- ✅ **Compilation automatique** avec gestion d'erreurs complète
+- ✅ **Détection automatique** des fonctions
+- ✅ **Messages d'aide** en cas d'erreur
+- ✅ **Support complet** des bibliothèques C (math.h, string.h, etc.)
+- ✅ **Chargement dynamique** sans redémarrage
+- ✅ **Nettoyage automatique** des fichiers temporaires
+
+### **🔧 RÈGLES SIMPLES:**
+1. Commencez les fonctions par `may_package_`
+2. Incluez `#include <stdio.h>` au début
+3. Sauvegardez avec extension `.c`
+4. Utilisez `my.package.charge('votre_fichier.c')`
+
+### **💡 EXEMPLE COMPLET:**
+```my
+# Charger le package
+my.package.charge('exemple_package_simple.c')
+
+# Utiliser les fonctions
+may.package.may_package_saluer()
+may.package.may_package_calculer()
+
+# Intégrer avec Maya
+my.variable resultat = 'succès'
+my.if(resultat == 'succès')
+my.alors {
+    may.package.may_package_jeu()
+}
+```
+
+**🎯 NOUVEAU: Si erreur, Maya vous explique exactement quoi corriger!**
 
 ---
 
