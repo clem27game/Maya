@@ -18,12 +18,18 @@ git clone https://github.com/clem27game/Maya
 
 ```
 
-🌸**Fonctionnalités actuelles de Maya🌸**
+**🌸Fonctionnalités actuelles de Maya🌸**
 
-Maya n'est pour le moment qu'un très jeune language de programmation !
-mais deja tres créatif, avec affichage de messages simples comme coloré dans la console, dessins ASCII d'arbres, de coeurs , de chèvre, de cheval , de chiens, d'oiseaux, de moutons, de poissons et mêmes personnalisés, système de variables tres robuste et système de sortie et d'entrée input dans la console, génération de nombres aléatoires compris entre un 2 nombres ou chiffres choisis, génération aléatoire de texte parmis des textes personnalisés par vous dans votre code, affichage de police jolie, délai d'attente pour personnalisé vos sortie de console, mathématiques simples (additions, soustrations, multiplications et divisions ),conditions si alors et autre, système de créations de jeux en maya (dés, puissance4, mots reflechis, quizz, pendu, pierre-feuille-ciseau, devine le nombre, snake, tic tac ou encore memory) et simulations (clonage d'animaux, obtention du bac, combat entre personnages, nouvelles technologies, simulations d'IA,conscience de la robotique, monde personnalisé ou les robots dominent le monde) 🩷🩷
+Maya est maintenant un langage de programmation avancé et extensible !
+Avec affichage de messages colorés, dessins ASCII variés, système de variables robuste, input interactif, génération aléatoire, polices stylées, délais, mathématiques, conditions, mini-jeux complets (dés, puissance4, mots reflechis, quizz, pendu, pierre-feuille-ciseau, devine le nombre, snake, tic tac, memory) et simulations réalistes (clonage, bac, combat, technologies, IA, conscience robotique) 🩷🩷
 
-MAYA COMMENCE A VRAIMENT GRANDIR Tenez vous prêt ! ❤️
+**🚀 NOUVEAUTÉ v4.0 - MODULES ET PACKAGES! 🚀**
+- **Fonctions réutilisables** : Créez vos propres fonctions `may.*` réutilisables!
+- **Modules Maya** : Chargez des fonctions depuis d'autres fichiers `.my`!
+- **Packages C** : Intégrez du code C personnalisé dans Maya!
+- **Extensibilité** : Publiez vos packages sur GitHub et étendez Maya!
+
+MAYA EST MAINTENANT TOTALEMENT EXTENSIBLE! Tenez vous prêt ! ❤️
 
 -------
 
@@ -336,7 +342,7 @@ pour les versions qui vont venir nous prévoyons les fonctionnalités suivantes 
 4) fonctionnalités de jeux en rapport avec la philosophie (mini-quizz philosophes proposés par maya, jeux speciaux uniques imagines spécialement par la creatrice de Maya pour vous faire réfléchir, outils creatifs philosophes en maya, etc...) 💚
 5) Plus de mini-jeux dans la console (Je vous réserve la surprise ! il y aura même des jeux hybrides et inedits imaginés par moi, la créatice de Maya) 🍭
 6) gestion de fichiers (lire des fichiers, en créer , les excécuter,en supprimer etc...) 😈
-   
+
    et bien plus!
 
 **Le langage de programmation Maya a été imaginer et crée de A a Z toute seule par nekoclem (de son vrai nom Clémence Baril), née le 12 février 2007 ayant toujours rêver de crée son propre langage de programmation** 

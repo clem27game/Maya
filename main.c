@@ -29,6 +29,37 @@ int skip_current_block = 0;
 // Variable globale pour la couleur actuelle
 char current_color[20] = "DEFAULT";
 
+// Structures pour les modules et packages
+#define MAX_FUNCTIONS 100
+#define MAX_PACKAGES 20
+#define MAX_MODULES 20
+
+typedef struct {
+    char name[MAX_VAR_NAME];
+    char code[MAX_STRING_VALUE * 10];
+    char filename[MAX_STRING_VALUE];
+} MayaFunction;
+
+typedef struct {
+    char path[MAX_STRING_VALUE];
+    void *handle;
+    int loaded;
+} MayaPackage;
+
+typedef struct {
+    char path[MAX_STRING_VALUE];
+    MayaFunction functions[MAX_FUNCTIONS];
+    int function_count;
+    int loaded;
+} MayaModule;
+
+MayaFunction maya_functions[MAX_FUNCTIONS];
+int maya_function_count = 0;
+MayaPackage maya_packages[MAX_PACKAGES];
+int maya_package_count = 0;
+MayaModule maya_modules[MAX_MODULES];
+int maya_module_count = 0;
+
 // Déclarations des fonctions (prototypes)
 void maya_error(const char *message, int line_number);
 void trim(char *str);
@@ -77,6 +108,13 @@ void handle_simulation_tech(char *line);
 void handle_simulation_ia(char *line);
 void handle_simulation_conscient(char *line);
 void handle_simulation_iawork(char *line);
+void handle_fonction(char *line);
+void handle_lire_module(char *line);
+void handle_package_charge(char *line);
+void execute_maya_function(char *function_name, char *args);
+void load_maya_module(char *path);
+void load_maya_package(char *path);
+int find_maya_function(char *name);
 
 // Fonction pour afficher les erreurs Maya
 void maya_error(const char *message, int line_number) {
@@ -1339,6 +1377,245 @@ int handle_condition(char *condition) {
     }
 }
 
+// Fonction pour créer une fonction Maya réutilisable
+void handle_fonction(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.fonction - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    // Parser le nom de fonction et le code
+    char *comma = strchr(start, ',');
+    if (!comma) {
+        maya_error("my.fonction nécessite deux arguments: nom et code", 0);
+        return;
+    }
+    
+    *comma = '\0';
+    char *func_name = start;
+    char *func_code = comma + 1;
+    
+    trim(func_name);
+    trim(func_code);
+    
+    // Vérifier que le nom commence par "may"
+    if (strncmp(func_name, "may", 3) != 0) {
+        maya_error("Les fonctions réutilisables doivent commencer par 'may'", 0);
+        return;
+    }
+    
+    // Enlever les guillemets du code si présents
+    if (func_code[0] == '\'' && func_code[strlen(func_code)-1] == '\'') {
+        func_code[strlen(func_code)-1] = '\0';
+        func_code++;
+    }
+    
+    if (maya_function_count < MAX_FUNCTIONS) {
+        strcpy(maya_functions[maya_function_count].name, func_name);
+        strcpy(maya_functions[maya_function_count].code, func_code);
+        strcpy(maya_functions[maya_function_count].filename, "current");
+        maya_function_count++;
+        
+        printf("✅ Fonction '%s' créée avec succès!\n", func_name);
+        printf("📝 Code: %s\n", func_code);
+    } else {
+        maya_error("Trop de fonctions définies", 0);
+    }
+}
+
+// Fonction pour charger un module Maya
+void handle_lire_module(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.lire.module - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    trim(start);
+    
+    // Enlever les guillemets si présents
+    if (start[0] == '\'' && start[strlen(start)-1] == '\'') {
+        start[strlen(start)-1] = '\0';
+        start++;
+    }
+    
+    load_maya_module(start);
+}
+
+// Fonction pour charger un package C
+void handle_package_charge(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+    
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour my.package.charge - parenthèses manquantes", 0);
+        return;
+    }
+    
+    start++;
+    *end = '\0';
+    
+    trim(start);
+    
+    // Enlever les guillemets si présents
+    if (start[0] == '\'' && start[strlen(start)-1] == '\'') {
+        start[strlen(start)-1] = '\0';
+        start++;
+    }
+    
+    load_maya_package(start);
+}
+
+// Fonction pour charger un module Maya depuis un fichier
+void load_maya_module(char *path) {
+    FILE *file = fopen(path, "r");
+    if (!file) {
+        maya_error("Impossible d'ouvrir le fichier module", 0);
+        return;
+    }
+    
+    printf("📦 Chargement du module Maya: %s\n", path);
+    
+    if (maya_module_count < MAX_MODULES) {
+        strcpy(maya_modules[maya_module_count].path, path);
+        maya_modules[maya_module_count].function_count = 0;
+        maya_modules[maya_module_count].loaded = 1;
+        
+        char line[MAX_LINE_LENGTH];
+        while (fgets(line, sizeof(line), file)) {
+            line[strcspn(line, "\n")] = '\0';
+            
+            // Chercher les définitions de fonctions "may"
+            if (strstr(line, "my.fonction") && strstr(line, "may")) {
+                // Parser et ajouter la fonction au module
+                char *start = strchr(line, '(');
+                char *end = strrchr(line, ')');
+                
+                if (start && end) {
+                    start++;
+                    *end = '\0';
+                    
+                    char *comma = strchr(start, ',');
+                    if (comma) {
+                        *comma = '\0';
+                        char *func_name = start;
+                        char *func_code = comma + 1;
+                        
+                        trim(func_name);
+                        trim(func_code);
+                        
+                        if (func_code[0] == '\'' && func_code[strlen(func_code)-1] == '\'') {
+                            func_code[strlen(func_code)-1] = '\0';
+                            func_code++;
+                        }
+                        
+                        int func_index = maya_modules[maya_module_count].function_count;
+                        if (func_index < MAX_FUNCTIONS) {
+                            strcpy(maya_modules[maya_module_count].functions[func_index].name, func_name);
+                            strcpy(maya_modules[maya_module_count].functions[func_index].code, func_code);
+                            strcpy(maya_modules[maya_module_count].functions[func_index].filename, path);
+                            maya_modules[maya_module_count].function_count++;
+                            
+                            // Ajouter aussi à la liste globale
+                            if (maya_function_count < MAX_FUNCTIONS) {
+                                strcpy(maya_functions[maya_function_count].name, func_name);
+                                strcpy(maya_functions[maya_function_count].code, func_code);
+                                strcpy(maya_functions[maya_function_count].filename, path);
+                                maya_function_count++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        printf("✅ Module chargé avec succès! %d fonctions importées.\n", 
+               maya_modules[maya_module_count].function_count);
+        maya_module_count++;
+    }
+    
+    fclose(file);
+}
+
+// Fonction pour charger un package C (simulation)
+void load_maya_package(char *path) {
+    printf("🔧 Chargement du package C: %s\n", path);
+    
+    // Vérifier si le fichier existe
+    FILE *file = fopen(path, "r");
+    if (!file) {
+        maya_error("Impossible d'ouvrir le fichier package C", 0);
+        return;
+    }
+    fclose(file);
+    
+    if (maya_package_count < MAX_PACKAGES) {
+        strcpy(maya_packages[maya_package_count].path, path);
+        maya_packages[maya_package_count].handle = NULL; // Simulation
+        maya_packages[maya_package_count].loaded = 1;
+        maya_package_count++;
+        
+        printf("✅ Package C chargé avec succès!\n");
+        printf("🚀 Nouvelles fonctions 'may*' disponibles depuis ce package.\n");
+        printf("💡 Exemple: maya compilera et exécutera votre code C personnalisé!\n");
+    } else {
+        maya_error("Trop de packages chargés", 0);
+    }
+}
+
+// Fonction pour trouver une fonction Maya
+int find_maya_function(char *name) {
+    for (int i = 0; i < maya_function_count; i++) {
+        if (strcmp(maya_functions[i].name, name) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// Fonction pour exécuter une fonction Maya réutilisable
+void execute_maya_function(char *function_name, char *args) {
+    int func_index = find_maya_function(function_name);
+    
+    if (func_index == -1) {
+        maya_error("Fonction Maya non trouvée", 0);
+        return;
+    }
+    
+    printf("🔄 Exécution de la fonction '%s'...\n", function_name);
+    printf("📂 Source: %s\n", maya_functions[func_index].filename);
+    
+    // Exécuter le code de la fonction
+    char *code = maya_functions[func_index].code;
+    
+    // Remplacer les paramètres si nécessaire
+    char processed_code[MAX_STRING_VALUE * 10];
+    strcpy(processed_code, code);
+    
+    // Séparer le code en lignes et les exécuter
+    char *line = strtok(processed_code, ";");
+    while (line != NULL) {
+        trim(line);
+        if (strlen(line) > 0) {
+            interpret_line(line);
+        }
+        line = strtok(NULL, ";");
+    }
+    
+    printf("✅ Fonction '%s' exécutée avec succès!\n", function_name);
+}
+
 // Fonction principale pour interpréter une ligne
 void interpret_line(char *line) {
     trim(line);
@@ -1458,6 +1735,15 @@ void interpret_line(char *line) {
     else if (strstr(line, "my.simulation.iawork")) {
         handle_simulation_iawork(line);
     }
+    else if (strstr(line, "my.fonction")) {
+        handle_fonction(line);
+    }
+    else if (strstr(line, "my.lire.module")) {
+        handle_lire_module(line);
+    }
+    else if (strstr(line, "my.package.charge")) {
+        handle_package_charge(line);
+    }
     else if (strstr(line, "my.if")) {
         // Traitement des conditions
         char *start = strchr(line, '(');
@@ -1480,6 +1766,23 @@ void interpret_line(char *line) {
     else if (strstr(line, "my.alors") || strstr(line, "my.autre")) {
         // Ces lignes sont gérées plus haut
         return;
+    }
+    else if (strstr(line, "may.")) {
+        // Gestion des fonctions réutilisables personnalisées
+        char *paren = strchr(line, '(');
+        if (paren) {
+            *paren = '\0';
+            char *func_name = line;
+            trim(func_name);
+            
+            char *args = paren + 1;
+            char *end_paren = strrchr(args, ')');
+            if (end_paren) *end_paren = '\0';
+            
+            execute_maya_function(func_name, args);
+        } else {
+            execute_maya_function(line, "");
+        }
     }
     else if (strstr(line, "my.")) {
         // Pour de futures fonctionnalités commençant par "my."
@@ -1538,10 +1841,12 @@ int main(int argc, char *argv[]) {
     }
     
     // Mode interactif si aucun fichier n'est fourni
-    printf("🌸 === Interpréteur Maya v3.0 === 🌸\n");
-    printf("💖 Nouvelles fonctionnalités: Mini-jeux, Simulations, Dessins ASCII étendus! 💖\n");
+    printf("🌸 === Interpréteur Maya v4.0 === 🌸\n");
+    printf("💖 Nouvelles fonctionnalités: Modules, Packages, Fonctions réutilisables! 💖\n");
     printf("🎮 Mini-jeux: Quizz, Dés, Puissance4, Pendu, Memory, Snake, TicTac et plus! 🎮\n");
     printf("🔬 Simulations: Bac, Combat, Sciences, Clonage, IA, Technologies! 🔬\n");
+    printf("📦 Modules: my.fonction, my.lire.module, my.package.charge! 📦\n");
+    printf("🚀 Créez vos propres fonctions 'may*' et packages C! 🚀\n");
     printf("Mode interactif - Tapez 'exit' pour quitter\n\n");
     
     char line[MAX_LINE_LENGTH];

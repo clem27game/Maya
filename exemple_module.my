@@ -1,0 +1,21 @@
+
+# Exemple de module Maya avec fonctions réutilisables
+
+# Définition de fonctions réutilisables avec le préfix 'may'
+
+# Fonction pour saluer
+my.fonction('may.saluer', 'my.console(\'Bonjour depuis une fonction réutilisable!\'); my.color.console(\'GREEN\'); my.console(\'Fonction may.saluer exécutée!\'); my.color.console(\'DEFAULT\')')
+
+# Fonction pour calculer et afficher
+my.fonction('may.calculer', 'my.variable resultat = 10; my.math.add(resultat + 5); my.console(\'Calcul terminé!\')')
+
+# Fonction pour dessiner un cœur coloré
+my.fonction('may.coeur.colore', 'my.color.console(\'PINK\'); my.draw.heart; my.color.console(\'DEFAULT\'); my.console(\'Cœur rose dessiné!\')')
+
+# Fonction pour quiz personnalisé
+my.fonction('may.quiz.perso', 'my.console(\'Quiz personnalisé Maya!\'); my.quizz(\'Quel est le langage créé par Clémence?\', \'Maya\')')
+
+# Fonction pour simulation personnalisée
+my.fonction('may.simul.perso', 'my.console(\'Simulation personnalisée!\'); my.simulation.bac(); my.delai(1000); my.simulation.ia(\'IA Personnalisée\')')
+
+my.console('📦 Module exemple_module.my prêt avec 5 fonctions réutilisables!')

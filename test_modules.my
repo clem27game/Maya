@@ -1,0 +1,56 @@
+
+# Test des nouvelles fonctionnalités Maya v4.0 - Modules et Packages
+
+my.console('🌸 === Test Maya v4.0 - Modules et Packages === 🌸')
+
+# Test 1: Création de fonctions réutilisables
+my.console('🔧 === Création de fonctions === 🔧')
+
+# Créer une fonction simple
+my.fonction('may.test.simple', 'my.console(\'Test fonction simple!\'); my.draw.heart')
+
+# Créer une fonction avec calculs
+my.fonction('may.math.avance', 'my.variable a = 20; my.variable b = 15; my.math.add(a + b); my.console(\'Calcul avancé terminé!\')')
+
+# Créer une fonction avec animations
+my.fonction('may.animation', 'my.color.console(\'BLUE\'); my.console(\'Animation en cours...\'); my.delai(1000); my.draw.fish; my.delai(500); my.draw.bird; my.color.console(\'DEFAULT\')')
+
+# Test 2: Chargement de module externe
+my.console('📦 === Chargement de modules === 📦')
+my.lire.module('exemple_module.my')
+
+# Test 3: Exécution des fonctions créées
+my.console('▶️ === Exécution des fonctions === ▶️')
+
+# Exécuter fonction locale
+may.test.simple()
+my.delai(1000)
+
+may.math.avance()
+my.delai(1000)
+
+may.animation()
+my.delai(1000)
+
+# Exécuter fonctions du module chargé
+may.saluer()
+my.delai(1000)
+
+may.calculer()
+my.delai(1000)
+
+may.coeur.colore()
+my.delai(1000)
+
+may.quiz.perso()
+my.delai(1000)
+
+may.simul.perso()
+
+# Test 4: Simulation de chargement de package C
+my.console('🔧 === Packages C === 🔧')
+my.package.charge('mon_package.c')
+
+my.console('🎉 === Tests terminés! === 🎉')
+my.console('✨ Maya v4.0 est maintenant extensible et modulaire! ✨')
+my.console('🚀 Créez vos propres modules et packages pour étendre Maya! 🚀')
