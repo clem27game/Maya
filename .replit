@@ -66,19 +66,3 @@ pattern = "**/*.{c,h}"
 
 [languages.c.languageServer]
 start = "ccls"
-
-[workflows]
-runButton = "Run Maya"
-
-[[workflows.workflow]]
-name = "Run Maya"
-author = 10543762
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "make -s"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "./main"
