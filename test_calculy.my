@@ -1,0 +1,30 @@
+
+# Test du package Calculy - Calculs mathématiques avancés
+
+my.console('🧮 === Test du package Calculy === 🧮')
+
+# Charger le package Calculy
+my.package.charge('calculy_package.c')
+
+my.console('🔢 Test des fonctions mathématiques:')
+
+# Test des fonctions du package Calculy
+may.package.cuber()
+my.delai(500)
+
+may.package.carre()
+my.delai(500)
+
+may.package.median()
+my.delai(500)
+
+may.package.moyenne()
+my.delai(500)
+
+may.package.pythagore()
+my.delai(500)
+
+may.package.thales()
+
+my.console('🎉 Tous les tests du package Calculy terminés!')
+my.console('📐 Votre package de mathématiques avancées fonctionne parfaitement!')
