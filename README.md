@@ -109,17 +109,17 @@ my.util.db('GAME1234')
 my.execute.c('printf("Hello from C!"); int x = 5 + 3; printf("Result: %d", x);')
 ```
 
-### **🌌 5. NOUVELLES SIMULATIONS FANTASTIQUES**
+### **🌌 5. NOUVELLES SIMULATIONS FANTASTIQUES (Pré-definis pour narration)**
 
 **Simulations scientifiques:**
-- `my.simulation.monrobot(nom, messages)` - Créer votre robot
+- `my.simulation.monrobot(nom, messages)` - 
 - `my.simulation.quantique(paramètres)` - Univers quantique
 - `my.simulation.monunivers(nom, description)` - Votre univers
 - `my.simulation.atomes(type)` - Simulations atomiques
 - `my.simulation.timetravel(années)` - Voyage temporel (1-15 ans)
 
 **Contes magiques:**
-- `my.simulation.fairy(histoire)` - Conte de fée personnalisé
+- `my.simulation.fairy(histoire)` - Conte de fée 
 - `my.simulation.vampire(récit)` - Histoire de vampire
 - `my.simulation.sirene(histoire)` - Récit de sirène
 - `my.simulation.monster(créature)` - Histoire de monstre
