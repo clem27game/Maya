@@ -149,6 +149,21 @@ my.console('=== Fin des tests ===')
 
 ° couleurs supportés :
 
+🛑 les noms des couleurs doivent être en anglais et en majuscule , liste de couleurs supportés 
+- rouge (RED)
+- vert (GREEN)
+- jaune (YELLOW)
+- bleu (BLUE)
+- magenta (MAGENTA)
+- cyan (CYAN)
+- blanck (WHITE)
+- noir (BLACK)
+- rose (PINK)
+- orange (ORANGE)
+- violet (PURPLE)
+- Maron (BROWN)
+
+
 -**🧶 Générations de nombres compris entre 2 nombres de votre choix** : my.nombre.random
 
 -**🥰 Génération de textes et d'options aleatoire parmis vos choix codés** : my.random.txt
