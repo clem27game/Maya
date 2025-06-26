@@ -1,0 +1,17 @@
+
+# Test simple pour Maya v5.0
+# Fichier: test_simple.my
+
+my.console('🌸 Test d\'exécution Maya v5.0 🌸')
+my.console('Bonjour depuis Maya!')
+
+my.variable nom = 'Développeur'
+my.console('Bienvenue ' + nom + '!')
+
+my.math(10 + 5)
+my.math.carre(5)
+my.math.racine(16)
+
+my.draw.heart()
+
+my.console('✅ Test terminé avec succès!')
