@@ -17,7 +17,7 @@ cd Maya
 make
 ```
 
-### Installation Globale (Recommandée)
+### Installation Globale (non Recommandée/ mode fichier preferable)
 Pour utiliser Maya depuis n'importe où avec `maya run <fichier>`:
 
 ```bash
@@ -600,7 +600,23 @@ maya> exit
 - ✅ **Interface créative ultime**
 
 ---
+### 🤖 Fonctionnement du chatbot
 
+Le chatbot fonctionne sans interactivité directe via `input()` :
+
+* **Vous écrivez vous-mêmes les messages et les réponses**.
+* Ces échanges sont **envoyés automatiquement** dans l’ordre choisi.
+* Cela permet de **contrôler précisément le contenu du dialogue** sans intervention utilisateur pendant l’exécution.
+
+---
+
+### 🎭 Mode simulation
+
+Les simulations sont des **narrations intégrées** qui peuvent être insérées :
+
+* Au milieu de quiz, d’histoires interactives avec choix, ou de dessins.
+* Elles servent à **créer des scènes ou séquences scénarisées** pour enrichir l’expérience.
+* 
 ## **❤️ À propos de Maya**
 
 **Le langage de programmation Maya a été imaginé et créé de A à Z toute seule par nekoclem (de son vrai nom Clémence Baril), née le 12 février 2007 ayant toujours rêvé de créer son propre langage de programmation.**
