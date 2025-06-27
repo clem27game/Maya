@@ -5,7 +5,7 @@ my.console('🌸 === Tests Maya v6.0 - Nouvelles Fonctionnalités === 🌸')
 
 # Test 1: Chatbot personnalisé
 my.console('🤖 Test 1: Création d\'un chatbot')
-my.create.robot('MayaBot', 'bonjour:Salut! Je suis MayaBot!,aide:Je peux vous aider avec Maya!,code:Voici du code Maya fantastique!,bye:Au revoir!')
+my.create.robot('Mayat', 'bonjour clem:Salut! Je suis Maya!,aide:Je peux vous aider avec le langage de programmation Maya!,code:Voici du code Maya fantastique!,bye:Au revoir!')
 
 # Test 2: Boucles avancées
 my.console('🔄 Test 2: Boucles 
@@ -22,7 +22,7 @@ my.owngame('L\'aventure du développeur Maya')
 
 # Test 5: Modification console dynamique
 my.console('💬 Test 5: Modification dynamique')
-my.modifie.console('Chargement en cours...', 1500, 'Chargement terminé!')
+my.modifie.console('Chargement..', 1500, 'Chargement Finis!')
 
 # Test 6: Menu interactif
 my.console('📋 Test 6: Menu interactif')
