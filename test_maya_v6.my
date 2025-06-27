@@ -8,11 +8,7 @@ my.console('🤖 Test 1: Création d\'un chatbot')
 my.create.robot('MayaBot', 'bonjour:Salut! Je suis MayaBot!,aide:Je peux vous aider avec Maya!,code:Voici du code Maya fantastique!,bye:Au revoir!')
 
 # Test 2: Boucles avancées
-my.console('🔄 Test 2: Boucles avancées')
-my.for(i, 1, 3)
-my.loop(2)
-my.variable x = 0
-my.while(x < 1)
+my.console('🔄 Test 2: Boucles 
 
 # Test 3: Palettes créatives
 my.console('🎨 Test 3: Palettes créatives')

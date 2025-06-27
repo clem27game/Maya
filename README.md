@@ -48,8 +48,8 @@ maya help                     # Aide complète
 ### **🤖 1. CHATBOTS PERSONNALISÉS**
 
 **Création de robots conversationnels:**
-- `my.create.robot('NomRobot', 'mot1:réponse1,mot2:réponse2')` - Créer un chatbot interactif
-
+- `my.create.robot('NomRobot', 'mot1:réponse1,mot2:réponse2')` - Créer un chatbot
+- 
 **Exemple:**
 ```my
 my.create.robot('Maya-Assistant', 'bonjour:Salut! Comment allez-vous?,aide:Je suis là pour vous aider!,bye:Au revoir!')
@@ -75,14 +75,13 @@ my.loop(3)  # Répète 3 fois
 - `my.palette('dessin', 'couleur')` - Créer des dessins ASCII colorés personnalisés
 
 **Jeux personnalisés:**
-- `my.owngame('concept')` - Créer votre propre jeu interactif
-
+- `my.owngame('concept')` - Jouer au jeu de l'histoire de maya
+- 
 **Exemple:**
 ```my
 my.palette('mouton', 'ROSE')  # Mouton rose
 my.palette('oiseau', 'BLEU')  # Oiseau bleu
 my.palette('abeille', 'JAUNE')  # Abeille jaune
-my.owngame('Mon aventure épique')
 ```
 
 ### **💬 4. FONCTIONS AVANCÉES**
