@@ -1,0 +1,76 @@
+
+# Bot Discord Avancé avec Discord.my
+# Pour lancer: ./main Discord.my-allume exemple_bot_avance.my
+
+my.console('🚀 Configuration Bot Discord Avancé 🚀')
+
+# Configuration principale
+Discord.my.connect('YOUR_ADVANCED_BOT_TOKEN', '$')
+Discord.my.status('ne pas déranger')
+Discord.my.activity('watching', 'les serveurs Maya')
+
+# Intents avancés
+Discord.my.intent('message_content')
+Discord.my.intent('guild_members')
+Discord.my.intent('guild_presences')
+
+# === COMMANDES DE BASE ===
+Discord.my.command('ping', 'Pong! 🏓 Bot actif!')
+Discord.my.command('version', 'Maya Discord Bot v2.0 - Créé avec Discord.my')
+
+# === EMBEDS CRÉATIFS ===
+Discord.my.embed('bienvenue', '🌟 Bienvenue!', 'Bienvenue sur notre serveur Discord!\nN\'hésitez pas à explorer et poser des questions.', '#ffd700', 'Bot Maya Discord', 'https://example.com/welcome.gif')
+
+Discord.my.embed('regles', '📋 Règles du Serveur', '1. Respectez tous les membres\n2. Pas de spam\n3. Restez dans le sujet\n4. Amusez-vous!', '#ff4500', 'Administration')
+
+Discord.my.embed('stats', '📊 Statistiques', 'Membres: {member_count}\nChannels: {channel_count}\nRôles: {role_count}', '#00ced1', 'Statistiques en temps réel')
+
+# === COMMANDES DE MODÉRATION ===
+Discord.my.command('warn', 'Utilisateur averti!')
+Discord.my.permission('warn', 'MODERATE_MEMBERS')
+Discord.my.error('warn', '❌ Permission insuffisante pour avertir des membres!')
+
+Discord.my.kick('target', 'Membre exclu du serveur')
+Discord.my.permission('kick', 'KICK_MEMBERS')
+Discord.my.error('kick', '❌ Vous devez avoir la permission KICK_MEMBERS!')
+
+Discord.my.ban('target', 'Membre banni définitivement')
+Discord.my.permission('ban', 'BAN_MEMBERS')
+Discord.my.error('ban', '❌ Permission BAN_MEMBERS requise!')
+
+# === GESTION DES CHANNELS ===
+Discord.my.channel('create_text', 'nouveau-salon')
+Discord.my.channel('create_voice', 'Salon Vocal Temporaire')
+Discord.my.channel('clone', 'salon-existant')
+Discord.my.channel('delete', 'salon-à-supprimer')
+
+# === COMMANDES LUDIQUES ===
+Discord.my.command('joke', 'Voici une blague: Pourquoi les plongeurs plongent-ils toujours en arrière? Parce que sinon, ils tombent dans le bateau! 😄')
+
+Discord.my.command('citation', 'Citation du jour: "Le code est de la poésie" - nekoclem')
+
+Discord.my.embed('fortune', '🔮 Votre Fortune', 'Aujourd\'hui sera une journée extraordinaire pour vous!', '#9932cc', 'Oracle Maya')
+
+# === GÉNÉRATION ALÉATOIRE ===
+Discord.my.command('random_number', 'Nombre aléatoire généré!')
+Discord.my.random('number')
+
+Discord.my.command('random_image', 'Image surprise!')
+Discord.my.random('image')
+
+# === INTÉGRATION MAYA ===
+my.variable admin_name = 'nekoclem'
+my.variable server_name = 'Maya Community'
+
+Discord.my.embed('admin', 'Administrateur', 'Admin principal: ' + admin_name + '\nServeur: ' + server_name, '#dc143c', 'Informations Admin')
+
+# Utilisation des fonctionnalités Maya dans les commandes
+my.draw.heart
+my.console('❤️ Bot configuré avec amour!')
+
+my.for(i, 1, 3)
+my.console('Vérification système ' + i + '/3...')
+
+my.console('🎉 Bot Discord Avancé prêt!')
+my.console('🔥 Fonctionnalités activées: Modération, Embeds, Génération aléatoire')
+my.console('🚀 Lancement du bot...')

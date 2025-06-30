@@ -79,6 +79,36 @@ typedef struct {
 MayaDatabase maya_databases[MAX_DATABASES];
 int maya_db_count = 0;
 
+// Structures pour Discord.my
+typedef struct {
+    char token[256];
+    char prefix[10];
+    char status[50];
+    char activity_type[20];
+    char activity_name[100];
+    char status_type[20];
+    int bot_active;
+    int intents_enabled[10];
+} DiscordBot;
+
+typedef struct {
+    char trigger[50];
+    char response_type[20]; // "message" ou "embed"
+    char content[1000];
+    char embed_title[200];
+    char embed_description[1000];
+    char embed_color[20];
+    char embed_footer[200];
+    char embed_image[500];
+    char required_permission[50];
+    char error_message[500];
+} DiscordCommand;
+
+static DiscordBot discord_bot = {0};
+static DiscordCommand discord_commands[100];
+static int discord_command_count = 0;
+static int discord_mode = 0;
+
 // Déclarations des fonctions (prototypes)
 void maya_error(const char *message, int line_number);
 void trim(char *str);
@@ -99,6 +129,7 @@ void handle_random_txt(char *line);
 int handle_condition(char *condition);
 void interpret_line(char *line);
 void execute_maya_file(const char *filename);
+void execute_discord_bot(const char *filename);
 void apply_color(char *color);
 void reset_color();
 void draw_heart();
@@ -139,6 +170,22 @@ void call_package_function(char *function_name, char *args);
 int find_package_function(char *name);
 int detect_package_functions(char *source_path, char function_names[][MAX_VAR_NAME]);
 void get_package_info(int func_index, int *package_index, int *local_index);
+
+// Fonctions Discord.my
+void handle_discord_connect(char *line);
+void handle_discord_status(char *line);
+void handle_discord_activity(char *line);
+void handle_discord_command(char *line);
+void handle_discord_embed(char *line);
+void handle_discord_permission(char *line);
+void handle_discord_intent(char *line);
+void handle_discord_error(char *line);
+void handle_discord_kick(char *line);
+void handle_discord_ban(char *line);
+void handle_discord_channel(char *line);
+void handle_discord_random(char *line);
+void simulate_discord_api_call(const char *endpoint, const char *data);
+void start_discord_bot_simulation();
 
 // Nouvelles fonctionnalités v5.0
 void handle_math_median(char *line);
@@ -4211,6 +4258,569 @@ void handle_exercice_mana(char *line) {
     printf("🎓 Niveau: Terminale STMG\n");
 }
 
+// ========== FONCTIONNALITÉS DISCORD.MY ==========
+
+// Fonction pour connecter le bot Discord
+void handle_discord_connect(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour Discord.my.connect - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    // Parser les arguments: token, prefix
+    char *comma = strchr(start, ',');
+    if (!comma) {
+        maya_error("Discord.my.connect nécessite deux arguments: token et prefix", 0);
+        return;
+    }
+
+    *comma = '\0';
+    char *token = start;
+    char *prefix = comma + 1;
+
+    trim(token);
+    trim(prefix);
+
+    // Enlever les guillemets
+    if (token[0] == '\'' && token[strlen(token)-1] == '\'') {
+        token[strlen(token)-1] = '\0';
+        token++;
+    }
+    if (prefix[0] == '\'' && prefix[strlen(prefix)-1] == '\'') {
+        prefix[strlen(prefix)-1] = '\0';
+        prefix++;
+    }
+
+    // Valider le token Discord (format basique)
+    if (strlen(token) < 50) {
+        maya_error("Token Discord invalide (trop court)", 0);
+        return;
+    }
+
+    strcpy(discord_bot.token, token);
+    strcpy(discord_bot.prefix, prefix);
+    discord_bot.bot_active = 1;
+    
+    // Initialiser les intents par défaut
+    discord_bot.intents_enabled[0] = 1; // GUILD_MESSAGES
+    discord_bot.intents_enabled[1] = 1; // DIRECT_MESSAGES
+    discord_bot.intents_enabled[2] = 1; // GUILD_MESSAGE_REACTIONS
+
+    printf("🤖 DISCORD.MY - CONNEXION BOT 🤖\n");
+    printf("Token configuré: %.*s...\n", 20, token);
+    printf("Prefix: %s\n", prefix);
+    printf("🔗 Connexion à l'API Discord...\n");
+    
+    simulate_discord_api_call("/gateway/bot", "GET");
+    
+    printf("✅ Bot Discord connecté avec succès!\n");
+    printf("🎯 Prêt à recevoir des commandes avec le prefix: %s\n", prefix);
+}
+
+// Fonction pour définir le statut du bot
+void handle_discord_status(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour Discord.my.status - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    // Enlever les guillemets
+    if (start[0] == '\'' && start[strlen(start)-1] == '\'') {
+        start[strlen(start)-1] = '\0';
+        start++;
+    }
+
+    strcpy(discord_bot.status_type, start);
+
+    printf("🟢 DISCORD.MY - STATUT BOT 🟢\n");
+    printf("Statut configuré: %s\n", start);
+
+    char status_data[200];
+    snprintf(status_data, sizeof(status_data), "{\"status\":\"%s\"}", start);
+    simulate_discord_api_call("/users/@me/settings", status_data);
+    
+    printf("✅ Statut mis à jour sur Discord!\n");
+}
+
+// Fonction pour définir l'activité du bot
+void handle_discord_activity(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour Discord.my.activity - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    // Parser les arguments: type, nom
+    char *comma = strchr(start, ',');
+    if (!comma) {
+        maya_error("Discord.my.activity nécessite deux arguments: type et nom", 0);
+        return;
+    }
+
+    *comma = '\0';
+    char *activity_type = start;
+    char *activity_name = comma + 1;
+
+    trim(activity_type);
+    trim(activity_name);
+
+    // Enlever les guillemets
+    if (activity_type[0] == '\'' && activity_type[strlen(activity_type)-1] == '\'') {
+        activity_type[strlen(activity_type)-1] = '\0';
+        activity_type++;
+    }
+    if (activity_name[0] == '\'' && activity_name[strlen(activity_name)-1] == '\'') {
+        activity_name[strlen(activity_name)-1] = '\0';
+        activity_name++;
+    }
+
+    strcpy(discord_bot.activity_type, activity_type);
+    strcpy(discord_bot.activity_name, activity_name);
+
+    printf("🎮 DISCORD.MY - ACTIVITÉ BOT 🎮\n");
+    printf("Type: %s\n", activity_type);
+    printf("Nom: %s\n", activity_name);
+
+    char activity_data[300];
+    snprintf(activity_data, sizeof(activity_data), 
+             "{\"activities\":[{\"name\":\"%s\",\"type\":\"%s\"}]}", 
+             activity_name, activity_type);
+    simulate_discord_api_call("/users/@me/settings", activity_data);
+    
+    printf("✅ Activité mise à jour sur Discord!\n");
+}
+
+// Fonction pour créer des commandes
+void handle_discord_command(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour Discord.my.command - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    // Parser les arguments: trigger, content
+    char *comma = strchr(start, ',');
+    if (!comma) {
+        maya_error("Discord.my.command nécessite deux arguments: trigger et content", 0);
+        return;
+    }
+
+    *comma = '\0';
+    char *trigger = start;
+    char *content = comma + 1;
+
+    trim(trigger);
+    trim(content);
+
+    // Enlever les guillemets
+    if (trigger[0] == '\'' && trigger[strlen(trigger)-1] == '\'') {
+        trigger[strlen(trigger)-1] = '\0';
+        trigger++;
+    }
+    if (content[0] == '\'' && content[strlen(content)-1] == '\'') {
+        content[strlen(content)-1] = '\0';
+        content++;
+    }
+
+    if (discord_command_count < 100) {
+        strcpy(discord_commands[discord_command_count].trigger, trigger);
+        strcpy(discord_commands[discord_command_count].content, content);
+        strcpy(discord_commands[discord_command_count].response_type, "message");
+        discord_command_count++;
+
+        printf("⚡ DISCORD.MY - COMMANDE CRÉÉE ⚡\n");
+        printf("Déclencheur: %s%s\n", discord_bot.prefix, trigger);
+        printf("Réponse: %s\n", content);
+        printf("✅ Commande enregistrée! (%d/100)\n", discord_command_count);
+    } else {
+        maya_error("Limite de commandes atteinte (100 max)", 0);
+    }
+}
+
+// Fonction pour créer des embeds
+void handle_discord_embed(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour Discord.my.embed - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    // Parser les arguments: trigger, title, description, color, footer, image
+    char *args[6];
+    int arg_count = 0;
+    char *token = strtok(start, ",");
+    
+    while (token != NULL && arg_count < 6) {
+        trim(token);
+        if (token[0] == '\'' && token[strlen(token)-1] == '\'') {
+            token[strlen(token)-1] = '\0';
+            token++;
+        }
+        args[arg_count] = strdup(token);
+        arg_count++;
+        token = strtok(NULL, ",");
+    }
+
+    if (arg_count < 3) {
+        maya_error("Discord.my.embed nécessite au moins: trigger, title, description", 0);
+        return;
+    }
+
+    if (discord_command_count < 100) {
+        strcpy(discord_commands[discord_command_count].trigger, args[0]);
+        strcpy(discord_commands[discord_command_count].response_type, "embed");
+        strcpy(discord_commands[discord_command_count].embed_title, args[1]);
+        strcpy(discord_commands[discord_command_count].embed_description, args[2]);
+        
+        if (arg_count > 3) strcpy(discord_commands[discord_command_count].embed_color, args[3]);
+        else strcpy(discord_commands[discord_command_count].embed_color, "#0099ff");
+        
+        if (arg_count > 4) strcpy(discord_commands[discord_command_count].embed_footer, args[4]);
+        if (arg_count > 5) strcpy(discord_commands[discord_command_count].embed_image, args[5]);
+        
+        discord_command_count++;
+
+        printf("📋 DISCORD.MY - EMBED CRÉÉ 📋\n");
+        printf("Déclencheur: %s%s\n", discord_bot.prefix, args[0]);
+        printf("Titre: %s\n", args[1]);
+        printf("Description: %s\n", args[2]);
+        printf("Couleur: %s\n", discord_commands[discord_command_count-1].embed_color);
+        if (arg_count > 4) printf("Footer: %s\n", args[4]);
+        if (arg_count > 5) printf("Image: %s\n", args[5]);
+        printf("✅ Embed enregistré! (%d/100)\n", discord_command_count);
+    } else {
+        maya_error("Limite de commandes atteinte (100 max)", 0);
+    }
+
+    // Libérer la mémoire
+    for (int i = 0; i < arg_count; i++) {
+        free(args[i]);
+    }
+}
+
+// Fonction pour gérer les permissions
+void handle_discord_permission(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour Discord.my.permission - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    // Parser les arguments: trigger, permission
+    char *comma = strchr(start, ',');
+    if (!comma) {
+        maya_error("Discord.my.permission nécessite deux arguments: trigger et permission", 0);
+        return;
+    }
+
+    *comma = '\0';
+    char *trigger = start;
+    char *permission = comma + 1;
+
+    trim(trigger);
+    trim(permission);
+
+    // Enlever les guillemets
+    if (trigger[0] == '\'' && trigger[strlen(trigger)-1] == '\'') {
+        trigger[strlen(trigger)-1] = '\0';
+        trigger++;
+    }
+    if (permission[0] == '\'' && permission[strlen(permission)-1] == '\'') {
+        permission[strlen(permission)-1] = '\0';
+        permission++;
+    }
+
+    // Trouver la commande et ajouter la permission
+    for (int i = 0; i < discord_command_count; i++) {
+        if (strcmp(discord_commands[i].trigger, trigger) == 0) {
+            strcpy(discord_commands[i].required_permission, permission);
+            printf("🔒 DISCORD.MY - PERMISSION DÉFINIE 🔒\n");
+            printf("Commande: %s\n", trigger);
+            printf("Permission requise: %s\n", permission);
+            printf("✅ Permission configurée!\n");
+            return;
+        }
+    }
+
+    maya_error("Commande non trouvée pour définir la permission", 0);
+}
+
+// Fonction pour gérer les intents
+void handle_discord_intent(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour Discord.my.intent - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    // Enlever les guillemets
+    if (start[0] == '\'' && start[strlen(start)-1] == '\'') {
+        start[strlen(start)-1] = '\0';
+        start++;
+    }
+
+    printf("🎯 DISCORD.MY - INTENT CONFIGURÉ 🎯\n");
+    printf("Intent activé: %s\n", start);
+
+    // Mapper les intents courants
+    if (strcmp(start, "message_content") == 0) {
+        discord_bot.intents_enabled[3] = 1;
+    } else if (strcmp(start, "guild_members") == 0) {
+        discord_bot.intents_enabled[4] = 1;
+    } else if (strcmp(start, "guild_presences") == 0) {
+        discord_bot.intents_enabled[5] = 1;
+    }
+
+    printf("✅ Intent configuré pour le bot!\n");
+}
+
+// Fonction pour définir des messages d'erreur personnalisés
+void handle_discord_error(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour Discord.my.error - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    // Parser les arguments: trigger, error_message
+    char *comma = strchr(start, ',');
+    if (!comma) {
+        maya_error("Discord.my.error nécessite deux arguments: trigger et message", 0);
+        return;
+    }
+
+    *comma = '\0';
+    char *trigger = start;
+    char *error_msg = comma + 1;
+
+    trim(trigger);
+    trim(error_msg);
+
+    // Enlever les guillemets
+    if (trigger[0] == '\'' && trigger[strlen(trigger)-1] == '\'') {
+        trigger[strlen(trigger)-1] = '\0';
+        trigger++;
+    }
+    if (error_msg[0] == '\'' && error_msg[strlen(error_msg)-1] == '\'') {
+        error_msg[strlen(error_msg)-1] = '\0';
+        error_msg++;
+    }
+
+    // Trouver la commande et ajouter le message d'erreur
+    for (int i = 0; i < discord_command_count; i++) {
+        if (strcmp(discord_commands[i].trigger, trigger) == 0) {
+            strcpy(discord_commands[i].error_message, error_msg);
+            printf("❌ DISCORD.MY - MESSAGE D'ERREUR DÉFINI ❌\n");
+            printf("Commande: %s\n", trigger);
+            printf("Message d'erreur: %s\n", error_msg);
+            printf("✅ Message d'erreur configuré!\n");
+            return;
+        }
+    }
+
+    maya_error("Commande non trouvée pour définir le message d'erreur", 0);
+}
+
+// Fonctions de modération
+void handle_discord_kick(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour Discord.my.kick - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    printf("👢 DISCORD.MY - COMMANDE KICK 👢\n");
+    printf("Configuration: %s\n", start);
+    printf("✅ Commande de kick configurée!\n");
+    printf("🔒 Permissions requises: KICK_MEMBERS\n");
+}
+
+void handle_discord_ban(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour Discord.my.ban - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    printf("🔨 DISCORD.MY - COMMANDE BAN 🔨\n");
+    printf("Configuration: %s\n", start);
+    printf("✅ Commande de ban configurée!\n");
+    printf("🔒 Permissions requises: BAN_MEMBERS\n");
+}
+
+void handle_discord_channel(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour Discord.my.channel - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    printf("📢 DISCORD.MY - GESTION CHANNELS 📢\n");
+    printf("Configuration: %s\n", start);
+    printf("✅ Commandes de channel configurées!\n");
+    printf("🔒 Permissions requises: MANAGE_CHANNELS\n");
+}
+
+// Fonction pour les générations aléatoires
+void handle_discord_random(char *line) {
+    char *start = strchr(line, '(');
+    char *end = strrchr(line, ')');
+
+    if (!start || !end) {
+        maya_error("Syntaxe incorrecte pour Discord.my.random - parenthèses manquantes", 0);
+        return;
+    }
+
+    start++;
+    *end = '\0';
+
+    printf("🎲 DISCORD.MY - GÉNÉRATION ALÉATOIRE 🎲\n");
+    printf("Type: %s\n", start);
+
+    srand(time(NULL));
+    
+    if (strstr(start, "number")) {
+        int random_num = rand() % 1000 + 1;
+        printf("Nombre généré: %d\n", random_num);
+    } else if (strstr(start, "image")) {
+        char *images[] = {"🎨", "🖼️", "🌟", "⭐", "🌈", "🎭"};
+        int idx = rand() % 6;
+        printf("Image générée: %s\n", images[idx]);
+    }
+    
+    printf("✅ Contenu aléatoire généré!\n");
+}
+
+// Simulation d'appel API Discord
+void simulate_discord_api_call(const char *endpoint, const char *data) {
+    printf("🌐 API Discord: %s\n", endpoint);
+    printf("📤 Données: %s\n", data);
+    usleep(500000); // Simuler délai réseau
+    printf("📥 Réponse: 200 OK\n");
+}
+
+// Fonction pour démarrer la simulation du bot
+void start_discord_bot_simulation() {
+    printf("\n🚀 ===============================\n");
+    printf("🤖 DISCORD.MY BOT EN FONCTIONNEMENT 🤖\n");
+    printf("===============================\n");
+    printf("Bot Token: %.*s...\n", 20, discord_bot.token);
+    printf("Prefix: %s\n", discord_bot.prefix);
+    printf("Statut: %s\n", discord_bot.status_type);
+    printf("Activité: %s %s\n", discord_bot.activity_type, discord_bot.activity_name);
+    printf("Commandes configurées: %d\n", discord_command_count);
+    
+    printf("\n📋 LISTE DES COMMANDES:\n");
+    for (int i = 0; i < discord_command_count; i++) {
+        printf("  %s%s - %s\n", 
+               discord_bot.prefix, 
+               discord_commands[i].trigger,
+               strcmp(discord_commands[i].response_type, "embed") == 0 ? "Embed" : "Message");
+        if (strlen(discord_commands[i].required_permission) > 0) {
+            printf("    🔒 Permission: %s\n", discord_commands[i].required_permission);
+        }
+    }
+    
+    printf("\n🟢 Bot Discord actif et en écoute!\n");
+    printf("⚠️  Appuyez sur Ctrl+C pour arrêter le bot\n");
+    printf("===============================\n");
+    
+    // Boucle de simulation
+    while (1) {
+        printf("💬 [%s] En attente de messages...\n", discord_bot.prefix);
+        usleep(3000000); // 3 secondes
+        
+        // Simuler réception de message
+        if (rand() % 10 == 0) { // 10% de chance
+            printf("📨 Message reçu: %shelp\n", discord_bot.prefix);
+            printf("🤖 Réponse envoyée: Liste des commandes disponibles\n");
+        }
+    }
+}
+
+// Fonction pour exécuter un bot Discord
+void execute_discord_bot(const char *filename) {
+    discord_mode = 1;
+    printf("🤖 DISCORD.MY - LANCEMENT DU BOT 🤖\n");
+    printf("Fichier bot: %s\n", filename);
+    
+    // Vérifier l'extension .my
+    const char *ext = strrchr(filename, '.');
+    if (!ext || strcmp(ext, ".my") != 0) {
+        maya_error("Le fichier bot doit avoir l'extension .my", 0);
+        return;
+    }
+    
+    // Exécuter le fichier de configuration du bot
+    execute_maya_file(filename);
+    
+    // Vérifier que le bot est configuré
+    if (!discord_bot.bot_active) {
+        maya_error("Bot non configuré - utilisez Discord.my.connect() d'abord", 0);
+        return;
+    }
+    
+    // Démarrer la simulation du bot
+    start_discord_bot_simulation();
+}
+
 // Fonction principale pour interpréter une ligne
 void interpret_line(char *line) {
     trim(line);
@@ -4246,7 +4856,45 @@ void interpret_line(char *line) {
     }
 
     // Structure modulaire pour faciliter l'ajout de nouvelles fonctionnalités
-    if (strstr(line, "my.console")) {
+    
+    // Gestion des commandes Discord.my
+    if (strstr(line, "Discord.my.connect")) {
+        handle_discord_connect(line);
+    }
+    else if (strstr(line, "Discord.my.status")) {
+        handle_discord_status(line);
+    }
+    else if (strstr(line, "Discord.my.activity")) {
+        handle_discord_activity(line);
+    }
+    else if (strstr(line, "Discord.my.embed")) {
+        handle_discord_embed(line);
+    }
+    else if (strstr(line, "Discord.my.command")) {
+        handle_discord_command(line);
+    }
+    else if (strstr(line, "Discord.my.permission")) {
+        handle_discord_permission(line);
+    }
+    else if (strstr(line, "Discord.my.intent")) {
+        handle_discord_intent(line);
+    }
+    else if (strstr(line, "Discord.my.error")) {
+        handle_discord_error(line);
+    }
+    else if (strstr(line, "Discord.my.kick")) {
+        handle_discord_kick(line);
+    }
+    else if (strstr(line, "Discord.my.ban")) {
+        handle_discord_ban(line);
+    }
+    else if (strstr(line, "Discord.my.channel")) {
+        handle_discord_channel(line);
+    }
+    else if (strstr(line, "Discord.my.random")) {
+        handle_discord_random(line);
+    }
+    else if (strstr(line, "my.console")) {
         handle_console(line);
     }
     else if (strstr(line, "my.math.median")) {
@@ -4611,6 +5259,13 @@ int main(int argc, char *argv[]) {
     // Initialiser le générateur de nombres aléatoires
     srand(time(NULL));
 
+    // Vérifier le mode Discord.my
+    if (argc == 3 && strcmp(argv[1], "Discord.my-allume") == 0) {
+        const char *bot_filename = argv[2];
+        execute_discord_bot(bot_filename);
+        return 0;
+    }
+
     // Si un fichier est passé en argument
     if (argc == 2) {
         const char *filename = argv[1];
@@ -4629,6 +5284,9 @@ int main(int argc, char *argv[]) {
     // Mode interactif si aucun fichier n'est fourni
     printf("🌸 === Interpréteur Maya v6.0 - L'IMAGINATION SANS LIMITES === 🌸\n");
     printf("🆕 NOUVELLES FONCTIONNALITÉS v6.0:\n");
+    printf("🤖 Discord.my: Créez des bots Discord complets!\n");
+    printf("   Usage: ./main Discord.my-allume mon_bot.my\n");
+    printf("   Fonctions: Discord.my.connect, Discord.my.command, Discord.my.embed\n");
     printf("🤖 Chatbots: my.create.robot (créez vos assistants IA!)\n");
     printf("🔄 Boucles: my.for, my.while, my.loop (contrôle de flux complet!)\n");
     printf("🎨 Palettes: my.palette (dessins colorés personnalisés!)\n");

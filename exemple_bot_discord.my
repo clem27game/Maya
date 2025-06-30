@@ -1,0 +1,57 @@
+
+# Exemple de Bot Discord créé avec Discord.my
+# Pour lancer ce bot: ./main Discord.my-allume exemple_bot_discord.my
+
+my.console('🤖 Configuration du Bot Discord Maya 🤖')
+
+# 1. Connexion du bot avec token et prefix
+Discord.my.connect('YOUR_BOT_TOKEN_HERE', '!')
+
+# 2. Configuration du statut et de l'activité
+Discord.my.status('en ligne')
+Discord.my.activity('playing', 'avec Maya v6.0!')
+
+# 3. Configuration des intents
+Discord.my.intent('message_content')
+Discord.my.intent('guild_messages')
+
+# 4. Création de commandes simples
+Discord.my.command('salut', 'Salut! Je suis un bot créé avec Maya!')
+Discord.my.command('aide', 'Commandes disponibles: !salut, !aide, !info, !random')
+Discord.my.command('info', 'Bot Discord créé avec le langage Maya v6.0!')
+
+# 5. Création de commandes avec embeds
+Discord.my.embed('maya', 'À propos de Maya', 'Maya est un langage de programmation créatif et révolutionnaire!', '#ff69b4', 'Créé par nekoclem', 'https://example.com/maya-logo.png')
+
+Discord.my.embed('serveur', 'Informations Serveur', 'Voici les informations de ce serveur Discord', '#00ff00', 'Bot Maya v6.0')
+
+# 6. Commandes avec permissions (modération)
+Discord.my.command('clear', 'Messages supprimés!')
+Discord.my.permission('clear', 'MANAGE_MESSAGES')
+Discord.my.error('clear', 'Vous n\'avez pas la permission de supprimer des messages!')
+
+Discord.my.kick('user_id', 'Utilisateur exclu par commande bot')
+Discord.my.ban('user_id', 'Utilisateur banni par commande bot')
+
+# 7. Gestion des channels
+Discord.my.channel('create', 'nouveau-channel')
+Discord.my.channel('delete', 'ancien-channel')
+
+# 8. Commandes avec génération aléatoire
+Discord.my.command('dice', 'Lancement de dés!')
+Discord.my.random('number')
+
+Discord.my.command('image', 'Image aléatoire!')
+Discord.my.random('image')
+
+# 9. Utilisation des fonctionnalités Maya dans le bot
+my.variable bot_version = '1.0'
+my.console('Bot version: ' + bot_version)
+
+# 10. Création d'un embed avec couleurs Maya
+my.color.console('PINK')
+my.console('🎨 Bot Discord Maya configuré avec style!')
+my.color.console('DEFAULT')
+
+my.console('✅ Configuration du bot terminée!')
+my.console('🚀 Le bot va maintenant se connecter à Discord...')
