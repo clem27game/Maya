@@ -631,4 +631,4 @@ utilisez maya sur replit directement en clonant son template :
 
 https://replit.com/@mikazia027/Maya-Programming-language
 
-🛑 Compte rendue d'erreurs de compilations et de problemes, maya est plus stable et utilisable sur replit et directement avec le template
+🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸
