@@ -1,3 +1,4 @@
+
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c99 -g -D_GNU_SOURCE
 LDFLAGS = -lm -ldl -lpthread
@@ -10,7 +11,7 @@ all: $(TARGET)
 
 # Compilation normale
 $(TARGET): $(SOURCE)
-	$(CC) $(CFLAGS) -O2 -o $(TARGET) $(SOURCE) $(LDFLAGS) -lcurl -ljson-c
+	$(CC) $(CFLAGS) -O2 -o $(TARGET) $(SOURCE) $(LDFLAGS)
 
 # Compilation avec debug
 $(TARGET_DEBUG): $(SOURCE)
