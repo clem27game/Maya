@@ -626,3 +626,9 @@ Les simulations sont des **narrations intégrées** qui peuvent être insérées
 **🧡 Bon codage dans l'univers Maya v6.0! 💖**
 
 🌸 **Maya - Où l'imagination devient réalité!** 🌸
+
+utilisez maya sur replit directement en clonant son template :
+
+https://replit.com/@mikazia027/Maya-Programming-language
+
+🛑 Compte rendue d'erreurs de compilations et de problemes, maya est plus stable et utilisable sur replit et directement avec le template
