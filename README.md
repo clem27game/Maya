@@ -17,7 +17,7 @@ cd Maya
 make
 ```
 
-### Installation Globale (non Recommandée/ mode fichier preferable)
+### Installation Globale (Recommandé)
 Pour utiliser Maya depuis n'importe où avec `maya run <fichier>`:
 
 ```bash
