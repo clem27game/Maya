@@ -632,3 +632,8 @@ utilisez maya sur replit directement en clonant son template :
 https://replit.com/@mikazia027/Maya-Programming-language
 
 🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸
+
+# 🧡 Le langage de programmation Maya intégre désormais des fonctionnalités de créations de bots discord !
+
+voir Discord.my a ce lien pour en savoir plus :
+https://github.com/clem27game/Discord.my
