@@ -47,7 +47,8 @@ maya help                     # Aide complète
 
 ### **🤖 1. CHATBOTS PERSONNALISÉS**
 
-**Création de robots conversationnels:**
+**Création de robots conversationnels pour vos simulations:** (Sans interaction, pour cree des chatbots avec interaction, merci d'utiliser les fonctionnalités avancées de variables et conditions de Maya)
+
 - `my.create.robot('NomRobot', 'mot1:réponse1,mot2:réponse2')` - Créer un chatbot
 - 
 **Exemple:**
@@ -74,7 +75,9 @@ my.loop(3)  # Répète 3 fois
 **Palettes créatives:**
 - `my.palette('dessin', 'couleur')` - Créer des dessins ASCII colorés personnalisés
 
-**Jeux personnalisés:**
+- consultez les exemples ou expérimentez pour savoir ce qui est supportés
+  
+**Jouer au jeu de Maya :**
 - `my.owngame('concept')` - Jouer au jeu de l'histoire de maya
 - 
 **Exemple:**
@@ -90,10 +93,11 @@ my.palette('abeille', 'JAUNE')  # Abeille jaune
 - `my.modifie.console('message_original', délai, 'message_modifié')` - Changer le texte après un délai
 
 **Menus interactifs:**
-- `my.interactive('titre')` - Créer des menus de sélection ASCII
+- `my.interactive('titre')` - Créer un menus de sélection ASCII prédéfinit avec le titre de votre choix pour vos jeux ou vos simulations
 
 **Système d'inventaire:**
 - `my.inventaire('action', 'nom', 'type', 'valeur')` - Gérer un inventaire dynamique
+- Utile pour vos simulations dans la console
 
 **Exemple:**
 ```my
@@ -163,9 +167,9 @@ my.math.racine(16)     # √16 = 4
 my.pytha(3, 4)         # Hypoténuse = 5
 ```
 
-### **🎵 2. FONCTIONNALITÉS MUSICALES**
+### **🎵 2. FONCTIONNALITÉS MUSICALES d'utilitaires**
 
-- `my.rythme.convertir(signature)` - Conversion rythmique
+- `my.rythme.convertir(signature)` - Conversion rythmique (convertit un tempo dans son équivalent d'une autre signature rythmique, consultez les exemples dans notre code pour savoir ce qui est supportée)
 - `my.renvoie.gamme(gamme)` - Notes d'une gamme
 - `my.obtenir.gamme(notes)` - Identifier une gamme
 
@@ -175,7 +179,7 @@ my.renvoie.gamme('Do majeur')
 my.rythme.convertir('4/4 vers 3/4')
 ```
 
-### **🗄️ 3. BASES DE DONNÉES MAYA**
+### **🗄️ 3. BASES DE DONNÉES MAYA (simulées pour vos recits et narrations) **
 
 **Création:**
 - `my.db(id, données)` - Créer une base de données (ID: 8 caractères, min 4 chiffres, 2 lettres)
@@ -201,16 +205,16 @@ my.util.db('GAME1234')
 my.execute.c('printf("Hello from C!"); int x = 5 + 3; printf("Result: %d", x);')
 ```
 
-### **🌌 5. NOUVELLES SIMULATIONS FANTASTIQUES (Pré-definis pour narration)**
+### **🌌 5. NOUVELLES SIMULATIONS FANTASTIQUES (Pré-definis et statiques pour narration et inspiration)**
 
 **Simulations scientifiques:**
 - `my.simulation.monrobot(nom, messages)` - 
 - `my.simulation.quantique(paramètres)` - Univers quantique
 - `my.simulation.monunivers(nom, description)` - Votre univers
-- `my.simulation.atomes(type)` - Simulations atomiques
-- `my.simulation.timetravel(années)` - Voyage temporel (1-15 ans)
+- `my.simulation.atomes(type)` - Simulations atomiques (supporte differents atomes et envoit leur nombre de protons ou de neutrons), - expérimentés pour découvrir ce que cela supporte)
+- `my.simulation.timetravel(années)` - simulation de Voyage temporel dans le passé (1-15 ans)
 
-**Contes magiques:**
+**Contes magiques: (statiques et predefinis pour vous inspirer)**
 - `my.simulation.fairy(histoire)` - Conte de fée 
 - `my.simulation.vampire(récit)` - Histoire de vampire
 - `my.simulation.sirene(histoire)` - Récit de sirène
@@ -226,14 +230,14 @@ my.simulation.monrobot('MayaBot', 'Bonjour!')
 ### **📚 6. EXERCICES ÉDUCATIFS BAC**
 
 **Création d'exercices:**
-- `my.exercice.create(matière, sujet)` - Créer vos exercices
+- `my.exercice.create(matière, sujet)` - Créer vos exercices (avec les conditions, variables et autres fonctionnalités concrètes)
 
-**Spécialisés BAC STMG:**
+**Spécialisés BAC STMG: (statiques et predefinis comme exemple et inspiration pour les vôtres)**
 - `my.exercice.gest.pgi()` - PGI et SIC
 - `my.exercice.gest.treso()` - Trésorerie, BFR, FRNG
 - `my.exercice.mana()` - Management
 
-**BAC Général:**
+**BAC Général:(statiques et prédéfinis pour exemple pour les vôtres)**
 - `my.exercice.math()` - Mathématiques
 - `my.exercice.histoire()` - Histoire-Géographie
 
@@ -281,9 +285,9 @@ my.tictac()
 my.memory(4)
 ```
 
-### **🔬 Simulations Réalistes**
+### **🔬 Simulations Réalistes (statistiques et predefinis pour vos narrations)**
 ```my
-my.simulation.bac()
+my.simulation.bac() # nombre et resultat de bac aléatoire pour cette simulation 
 my.simulation.combat('Guerrier vs Mage')
 my.simulation.sciences('Expérience chimique')
 my.simulation.clone('Chat')
@@ -300,7 +304,7 @@ may.package.ma_fonction()
 
 ## **💻 EXEMPLES COMPLETS v6.0**
 
-### **Exemple 1: Chatbot Interactif avec Boucles**
+### **Exemple 1: Simulation de Chatbot prédéfinis et Boucles**
 ```my
 my.console('🤖 Création d\'un assistant personnel')
 
@@ -315,7 +319,7 @@ my.loop(2)
 my.console('Tests de compatibilité...')
 ```
 
-### **Exemple 2: Jeu Créatif avec Palette et Inventaire**
+### **Exemple 2: Jeu Créatif avec simulation, Palette et Inventaire simuler**
 ```my
 my.console('🎮 Création d\'un jeu d\'aventure personnalisé')
 
@@ -417,7 +421,7 @@ my.simulation.atomes('Carbone')
 my.simulation.quantique('Multivers')
 ```
 
-### **Exemple 2: Base de Données pour Jeu**
+### **Exemple 2: Base de Données simulée pour Jeu**
 ```my
 my.console('🎮 Création système de jeu avec BDD')
 
@@ -433,6 +437,9 @@ my.db('PLAY5678', 'Pseudo: Maya, Score: 2000, Niveau: 11')
 ```
 
 ### **Exemple 3: Contes Interactifs**
+
+- 🛑 avertissement : ce code ne fonctionne pas directement, cest juste un exemple pour vous inspirer.
+  
 ```my
 my.console('🧚‍♀️ Génération de conte interactif')
 
@@ -449,7 +456,10 @@ my.autre {
 my.simulation.timetravel(10)  # Voyage dans le futur!
 ```
 
-### **Exemple 4: Exercices BAC Interactifs**
+### **Exemple 4: Exercices BAC - simulation et réponse réelle**
+
+- soyez créatif avec votre code !
+  
 ```my
 my.console('📚 Système de révision BAC')
 
@@ -467,6 +477,9 @@ my.alors {
 ```
 
 ### **Exemple 5: Code C Intégré**
+
+🛑 - Ce code d'exemple ne fonctionne pas directement, ceci est seulement pour vous inspirer a crée le votre 
+
 ```my
 my.console('⚡ Utilisation de C dans Maya')
 
@@ -521,9 +534,9 @@ my.package.charge('mon_package.c')
 
 **3. Utilisez vos fonctions:**
 ```my
-may.package.may_package_saluer()
-may.package.may_package_calculer()
-may.package.may_package_jeu()
+may.package.saluer()
+may.package.calculer()
+may.package.jeu()
 ```
 
 ### **✅ SYSTÈME ULTRA-ROBUSTE:**
@@ -546,14 +559,14 @@ may.package.may_package_jeu()
 my.package.charge('exemple_package_simple.c')
 
 # Utiliser les fonctions
-may.package.may_package_saluer()
-may.package.may_package_calculer()
+may.package.saluer()
+may.package.calculer()
 
 # Intégrer avec Maya
-my.variable resultat = 'succès'
+my.variable resultat = 'succés'
 my.if(resultat == 'succès')
 my.alors {
-    may.package.may_package_jeu()
+    may.package.jeu()
 }
 ```
 
@@ -563,7 +576,7 @@ my.alors {
 
 ## **🎯 UTILISATION COMPLÈTE**
 
-### **Mode Fichier:**
+### **Mode Fichier: (ne fonctionne plus, utilisez les commandes globales)**
 ```bash
 ./Maya/main mon_programme.my
 ```
