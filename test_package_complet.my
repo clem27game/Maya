@@ -9,11 +9,11 @@ my.package.charge('exemple_package_simple.c')
 
 # Test 2: Utilisation des fonctions du package
 my.console('🚀 Test 2: Exécution des fonctions C...')
-may.package.may_package_saluer()
-may.package.may_package_calculer()
-may.package.may_package_mini_jeu()
-may.package.may_package_art()
-may.package.may_package_simulation()
+may.package.saluer()
+may.package.calculer()
+may.package.mini_jeu()
+may.package.art()
+may.package.simulation()
 
 # Test 3: Package Calculy existant
 my.console('🧮 Test 3: Package Calculy...')
@@ -30,7 +30,7 @@ my.variable test = 'success'
 my.if(test == 'success')
 my.alors {
     my.console('✅ Tous les tests packages réussis!')
-    may.package.may_package_art()
+    may.package.art()
     my.math.carre(8)
 }
 
