@@ -563,7 +563,7 @@ may.package.saluer()
 may.package.calculer()
 
 ```
-informations sur le système de packages : Maya ne gère pas les variables des packages directement, vous ne pouvez pas definir sur maya, une variable que vous n'avez pas définit dans votre package C, ou alors vous devez faire une communication par un autre moyen : des fichiers text, que les utilisateurs de votre package modifieront a leurs guises facilement pour modifier les comportements, n'oubliez pas de documenter vos packages.
+**Informations sur le système de packages** : Maya ne gère pas les variables des packages directement, vous ne pouvez pas definir sur maya, une variable que vous n'avez pas définit dans votre package C, ou alors vous devez faire une communication par un autre moyen : des fichiers text, que les utilisateurs de votre package modifieront a leurs guises facilement pour modifier les comportements, n'oubliez pas de documenter vos packages.
 
 **🎯 NOUVEAU: Si erreur, Maya vous explique exactement quoi corriger!**
 
